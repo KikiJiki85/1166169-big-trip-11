@@ -466,5 +466,5 @@ render(tripEventsElement, createTripDaysContainerTemplate(), `beforeend`);
 const tripDaysContainer = tripEventsElement.querySelector(`.trip-days`);
 
 for (let i = 0; i < TRIP_DAYS_COUNT; i++) {
-  render(tripDaysContainer, createTripDayTemplate(), `afterbegin`);
+  render(tripDaysContainer, createTripDayTemplate(), `beforeend`);
 }
