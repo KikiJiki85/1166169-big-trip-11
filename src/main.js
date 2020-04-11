@@ -8,9 +8,10 @@ import {createTripInfoTemplate} from "./components/trip-info.js";
 import {createTripMenuTemplate} from "./components/trip-menu.js";
 import {createTripSortTemplate} from "./components/trip-sort.js";
 import {filters} from "./mock/filter.js";
+import {menuItems} from "./mock/menu.js";
+import {card} from "./mock/card.js";
 
 const TRIP_EVENTS_COUNT = 3;
-
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
 const siteMainElement = document.querySelector(`.page-main`);
@@ -28,10 +29,11 @@ render(tripInfoElement, createTripCostTemplate(), `beforeend`);
 
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 
-render(tripControlsElement, createTripMenuTemplate(), `afterbegin`);
+render(tripControlsElement, createTripMenuTemplate(menuItems), `afterbegin`);
 render(tripControlsElement, createFilterMenuTemplate(filters), `beforeend`);
 render(tripEventsElement, createTripSortTemplate(), `afterbegin`);
-render(tripEventsElement, createTripEventTemplate(), `beforeend`);
+
+render(tripEventsElement, createTripEventTemplate(card), `beforeend`);
 
 render(tripEventsElement, createTripDaysContainerTemplate(), `beforeend`);
 
