@@ -1,8 +1,5 @@
-const parseDate = (UTCTime) => {
-  const date = new Date(UTCTime);
-  return `${date.getDate()}/${date.getMonth()}/${String(date.getFullYear())
-    .slice(2)}`;
-};
+import {parseDate} from "../utils.js";
+
 
 export const createTripEventTemplate = (card) => {
   return (`

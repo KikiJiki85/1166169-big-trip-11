@@ -1,7 +1,4 @@
-const parseTime = (UTCTime) => {
-  const date = new Date(UTCTime);
-  return `${date.getHours()}:${date.getMinutes()}`;
-};
+import {parseTime} from "../utils.js";
 
 export const createTripDayEventTemplate = (card) => {
   return (`
