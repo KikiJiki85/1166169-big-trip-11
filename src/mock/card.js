@@ -1,3 +1,6 @@
+const CARDS_AMOUNT = 4;
+const OFFERS_AMOUNT = 3;
+
 const offers = [
   {
     name: `Add luggage`,
@@ -80,32 +83,22 @@ const getRandomDescription = () =>
     .slice(0, getRandomNumber(1, 4))
     .join(` `);
 
-const addZero = (number) => {
-  if (number === 0) {
-    return `01`;
-  }
-  return number < 10 ? `0${number}` : number;
-};
-
 const getRandomDate = () => {
-  const date = new Date(
-      getRandomNumber(2016, 2021),
-      getRandomNumber(0, 12),
-      getRandomNumber(0, 28)
+  return (
+    Date.now() + 1 +
+    Math.floor(Math.random() * 7) * 24 * getRandomNumber(0, 60) * 60 * 1000
   );
-  return `${addZero(date.getDate())}/${addZero(date.getMonth())}/${String(date.getFullYear()).slice(2)}`;
 };
-
-const getRandomTime = () =>
-  `${addZero(getRandomNumber(0, 13))}:${addZero(getRandomNumber(0, 60))}`;
 
 const generateCard = () => {
+  const startDate = getRandomDate();
+  const endDate = getRandomDate();
   return {
     type: getRandomArrayItem(types),
     city: getRandomArrayItem(cities),
-    startDate: `${getRandomDate()} ${getRandomTime()}`,
-    endDate: `${getRandomDate()} ${getRandomTime()}`,
-    offers,
+    startDate: Math.min(startDate, endDate),
+    endDate: Math.max(startDate, endDate),
+    offers: shuffleArray(offers).slice(0, OFFERS_AMOUNT),
     photos: Array(5)
       .fill(``)
       .map(getRandomPhoto),
@@ -114,4 +107,13 @@ const generateCard = () => {
   };
 };
 
-export const card = generateCard();
+const generateCards = (amount) => {
+  return Array(amount)
+  .fill(``)
+  .map(() => generateCard())
+  .sort(
+      (currentCard, nextCard) => currentCard.startDate - nextCard.startDate
+  );
+};
+
+export const cards = generateCards(CARDS_AMOUNT);
