@@ -1,6 +1,5 @@
 import {parseDate} from "../utils.js";
 
-
 export const createTripEventTemplate = (card) => {
   return (`
     <form class="trip-events__item  event  event--edit" action="#" method="post">

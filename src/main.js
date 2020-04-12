@@ -52,5 +52,3 @@ dates.forEach((date, dateIndex) => {
 
 const getFullPrice = cards.reduce((acc, item) => acc + item.price, 0);
 document.querySelector(`.trip-info__cost-value`).innerHTML = getFullPrice;
-
-//

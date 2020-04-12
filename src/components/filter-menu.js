@@ -1,6 +1,5 @@
 export const createFilterMenuTemplate = (filters) => {
-  return (`
-    <h2 class="visually-hidden">Filter events</h2>
+  return (`<h2 class="visually-hidden">Filter events</h2>
     <form class="trip-filters" action="#" method="get">
       ${filters
         .map((filter) => {

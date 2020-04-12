@@ -7,8 +7,7 @@ const getDuration = (startDateUTC, endDateUTC) => {
   return `${monthName} ${startDay}&nbsp;&mdash;&nbsp;${endDay}`;
 };
 export const createTripInfoTemplate = (cards) => {
-  return (`
-  <section class="trip-main__trip-info  trip-info">
+  return (`<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${cards[0].city}
        ${cards.length > 2 ? `&mdash; ... &mdash;` : `&mdash; ${cards[1].city} &mdash;`}
@@ -17,6 +16,5 @@ export const createTripInfoTemplate = (cards) => {
       ${getDuration(cards[0].startDate, cards[cards.length - 1].endDate)}
       </p>
     </div>
-  </section>
-  `);
+  </section>`);
 };
