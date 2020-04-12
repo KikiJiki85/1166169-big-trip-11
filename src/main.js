@@ -20,7 +20,7 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(tripMainElement, createTripInfoTemplate(), `afterbegin`);
+render(tripMainElement, createTripInfoTemplate(cards), `afterbegin`);
 
 const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 
@@ -38,7 +38,7 @@ render(tripEventsElement, createTripDaysContainerTemplate(), `beforeend`);
 
 const tripDaysContainer = tripEventsElement.querySelector(`.trip-days`);
 
-render(tripDaysContainer, createTripDayTemplate(), `beforeend`);
+render(tripDaysContainer, createTripDayTemplate(cards[0]), `beforeend`);
 
 const tripDayEventsContainer = tripDaysContainer.querySelector(`.trip-events__list`);
 

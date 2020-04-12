@@ -1,3 +1,9 @@
+const parseDate = (UTCTime) => {
+  const date = new Date(UTCTime);
+  return `${date.getDate()}/${date.getMonth()}/${String(date.getFullYear())
+    .slice(2)}`;
+};
+
 export const createTripEventTemplate = (card) => {
   return (`
     <form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -107,12 +113,12 @@ export const createTripEventTemplate = (card) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${card.startDate}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${parseDate(card.startDate)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${card.endDate}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${parseDate(card.endDate)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">

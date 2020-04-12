@@ -1,3 +1,8 @@
+const parseTime = (UTCTime) => {
+  const date = new Date(UTCTime);
+  return `${date.getHours()}:${date.getMinutes()}`;
+};
+
 export const createTripDayEventTemplate = (card) => {
   return (`
     <li class="trip-events__item">
@@ -9,9 +14,9 @@ export const createTripDayEventTemplate = (card) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T10:30">${card.startDate}</time>
+            <time class="event__start-time" datetime="2019-03-18T10:30">${parseTime(card.startDate)}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">${card.endDate}</time>
+            <time class="event__end-time" datetime="2019-03-18T11:00">${parseTime(card.endDate)}</time>
           </p>
           <p class="event__duration">30M</p>
         </div>
