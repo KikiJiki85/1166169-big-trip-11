@@ -7,7 +7,7 @@ import {createTripEventTemplate} from "./components/trip-event.js";
 import {createTripInfoTemplate} from "./components/trip-info.js";
 import {createTripMenuTemplate} from "./components/trip-menu.js";
 import {createTripSortTemplate} from "./components/trip-sort.js";
-import {render, createElement} from "./utils.js";
+import {createElement, renderElement, RenderPosition} from "./utils.js";
 import {filters} from "./mock/filter.js";
 import {menuItems} from "./mock/menu.js";
 import {cards} from "./mock/card.js";
