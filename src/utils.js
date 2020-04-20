@@ -1,4 +1,4 @@
-const RenderPosition = {
+export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOEND: `beforeend`
 };
@@ -13,10 +13,6 @@ export const renderElement = (container, component, place) => {
       break;
   }
 };
-
-// export const render = (container, template, place) => {
-//   container.insertAdjacentHTML(place, template);
-// };
 
 export const createElement = (template) => {
   const element = document.createElement(`div`);
@@ -34,4 +30,14 @@ export const parseDate = (UTCTime) => {
   const date = new Date(UTCTime);
   return `${date.getDate()}/${date.getMonth()}/${String(date.getFullYear())
     .slice(2)}`;
+};
+
+export const addZero = (value) => {
+  if (value === 0) {
+    return `00`;
+  } else if (value < 10) {
+    return `0${value}`;
+  }
+
+  return value;
 };

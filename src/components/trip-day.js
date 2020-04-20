@@ -37,3 +37,4 @@ export default class TripDay {
     this._element = null;
   }
 }
+

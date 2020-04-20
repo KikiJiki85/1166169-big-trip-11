@@ -1,8 +1,7 @@
 import {createElement} from "../utils.js";
 
 const createFilterMenuTemplate = (filters) => {
-  return (`<h2 class="visually-hidden">Filter events</h2>
-    <form class="trip-filters" action="#" method="get">
+  return (`<form class="trip-filters" action="#" method="get">
       ${filters
         .map((filter) => {
           return `
