@@ -1,4 +1,6 @@
-export const createFilterMenuTemplate = (filters) => {
+import {createElement} from "../utils.js";
+
+const createFilterMenuTemplate = (filters) => {
   return (`<h2 class="visually-hidden">Filter events</h2>
     <form class="trip-filters" action="#" method="get">
       ${filters
@@ -23,3 +25,26 @@ export const createFilterMenuTemplate = (filters) => {
     </form>
   `);
 };
+
+export default class FilterMenu {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilterMenuTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
