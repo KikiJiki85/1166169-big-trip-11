@@ -1,3 +1,5 @@
+import {createElement} from "../utils.js";
+
 const getDuration = (startDateUTC, endDateUTC) => {
   const startDate = new Date(startDateUTC);
   const monthName = startDate.toLocaleString(`default`, {month: `short`});
@@ -6,7 +8,8 @@ const getDuration = (startDateUTC, endDateUTC) => {
 
   return `${monthName} ${startDay}&nbsp;&mdash;&nbsp;${endDay}`;
 };
-export const createTripInfoTemplate = (cards) => {
+
+const createTripInfoTemplate = (cards) => {
   return (`<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${cards[0].city}
@@ -18,3 +21,26 @@ export const createTripInfoTemplate = (cards) => {
     </div>
   </section>`);
 };
+
+export default class TripInfo {
+  constructor(cards) {
+    this._cards = cards;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._cards);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
