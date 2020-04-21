@@ -65,15 +65,17 @@ dates.forEach((date, dateIndex) => {
   const day = new TripDayComponent(
       new Date(date),
       dateIndex + 1
-  ).getElement();
+  );
+
   cards
     .filter((_card) => new Date(_card.startDate).toDateString() === date)
     .forEach((_card) => {
-      const eventsList = day.querySelector(`.trip-events__list`);
       const tripDayEventComponent = new TripDayEventComponent(_card);
       const cardElement = tripDayEventComponent.getElement();
       const tripEventComponent = new TripEventComponent(_card);
       const cardEditElement = tripEventComponent.getElement();
+
+      const eventsList = day.getElement().querySelector(`.trip-events__list`);
       renderElement(eventsList, cardElement);
 
       cardElement
@@ -88,7 +90,7 @@ dates.forEach((date, dateIndex) => {
       });
 
     });
-  renderElement(tripDaysContainer, day);
+  renderElement(tripDaysContainer, day.getElement());
 });
 
 const getFullPrice = cards.reduce((acc, item) => acc + item.price, 0);
