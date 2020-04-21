@@ -32,8 +32,7 @@ const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 
 renderElement(
     tripInfoElement,
-    new TripCostComponent().getElement(),
-    RenderPosition.BEFOREEND
+    new TripCostComponent().getElement()
 );
 
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
@@ -46,8 +45,7 @@ renderElement(
 
 renderElement(
     tripControlsElement,
-    new FilterMenuComponent(filters).getElement(),
-    RenderPosition.BEFOREEND
+    new FilterMenuComponent(filters).getElement()
 );
 
 renderElement(
@@ -58,8 +56,7 @@ renderElement(
 
 renderElement(
     tripEventsElement,
-    new TripDaysContainerComponent().getElement(),
-    RenderPosition.BEFOREEND
+    new TripDaysContainerComponent().getElement()
 );
 
 const tripDaysContainer = tripEventsElement.querySelector(`.trip-days`);
@@ -77,7 +74,7 @@ dates.forEach((date, dateIndex) => {
       const cardElement = tripDayEventComponent.getElement();
       const tripEventComponent = new TripEventComponent(_card);
       const cardEditElement = tripEventComponent.getElement();
-      renderElement(eventsList, cardElement, RenderPosition.BEFOREEND);
+      renderElement(eventsList, cardElement);
 
       cardElement
         .querySelector(`.event__rollup-btn`)
@@ -91,7 +88,7 @@ dates.forEach((date, dateIndex) => {
       });
 
     });
-  renderElement(tripDaysContainer, day, RenderPosition.BEFOREEND);
+  renderElement(tripDaysContainer, day);
 });
 
 const getFullPrice = cards.reduce((acc, item) => acc + item.price, 0);
