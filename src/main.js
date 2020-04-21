@@ -72,21 +72,42 @@ dates.forEach((date, dateIndex) => {
     .forEach((_card) => {
       const tripDayEventComponent = new TripDayEventComponent(_card);
       const cardElement = tripDayEventComponent.getElement();
+
       const tripEventComponent = new TripEventComponent(_card);
       const cardEditElement = tripEventComponent.getElement();
 
       const eventsList = day.getElement().querySelector(`.trip-events__list`);
+
+      const replaceEditToCard = () => {
+        eventsList.replaceChild(cardElement, cardEditElement);
+      };
+
+      const replaceCardToEdit = () => {
+        eventsList.replaceChild(cardEditElement, cardElement);
+      };
+
+      const escKeyDownHandler = (evt) => {
+        const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+        if (isEscKey) {
+          replaceEditToCard();
+          document.removeEventListener(`keydown`, escKeyDownHandler);
+        }
+      };
+
       renderElement(eventsList, cardElement);
 
       cardElement
         .querySelector(`.event__rollup-btn`)
         .addEventListener(`click`, () => {
-          eventsList.replaceChild(cardEditElement, cardElement);
+          replaceCardToEdit();
+          document.addEventListener(`keydown`, escKeyDownHandler);
         });
 
       cardEditElement.addEventListener(`submit`, (evt) => {
         evt.preventDefault();
-        eventsList.replaceChild(cardElement, cardEditElement);
+        replaceEditToCard();
+        document.removeEventListener(`keydown`, escKeyDownHandler);
       });
 
     });
