@@ -1,4 +1,4 @@
-import {parseTime} from "../utils.js";
+import {parseTime} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
 const createTripDayEventTemplate = (card) => {
@@ -53,5 +53,9 @@ export default class TripDayEvent extends AbstractComponent {
 
   getTemplate() {
     return createTripDayEventTemplate(this._card);
+  }
+
+  setClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 }

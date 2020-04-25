@@ -1,4 +1,4 @@
-import {parseDate} from "../utils.js";
+import {parseDate} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
 const createTripEventTemplate = (card) => {
@@ -179,5 +179,9 @@ export default class TripEvent extends AbstractComponent {
 
   getTemplate() {
     return createTripEventTemplate(this._card);
+  }
+
+  setSubmitHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
   }
 }

@@ -93,16 +93,13 @@ if (cards.length === 0) {
         render(eventsList, cardElement);
 
         cardElement
-          .getElement()
-          .querySelector(`.event__rollup-btn`)
-          .addEventListener(`click`, () => {
+          .setClickHandler(() => {
             replace(cardEditElement, cardElement);
             document.addEventListener(`keydown`, escKeyDownHandler);
           });
 
         cardEditElement
-          .getElement()
-          .addEventListener(`submit`, (evt) => {
+          .setSubmitHandler((evt) => {
             evt.preventDefault();
             replace(cardElement, cardEditElement);
             document.removeEventListener(`keydown`, escKeyDownHandler);
