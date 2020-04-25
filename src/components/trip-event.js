@@ -1,4 +1,5 @@
-import {parseDate, createElement} from "../utils.js";
+import {parseDate} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createTripEventTemplate = (card) => {
   return (`<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -170,25 +171,13 @@ const createTripEventTemplate = (card) => {
   `);
 };
 
-export default class TripEvent {
+export default class TripEvent extends AbstractComponent {
   constructor(card) {
+    super();
     this._card = card;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripEventTemplate(this._card);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

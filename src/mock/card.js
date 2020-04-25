@@ -1,4 +1,4 @@
-const CARDS_AMOUNT = 0;
+const CARDS_AMOUNT = 10;
 const OFFERS_AMOUNT = 3;
 
 const offers = [
