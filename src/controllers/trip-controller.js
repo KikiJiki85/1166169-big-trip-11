@@ -4,13 +4,11 @@ import TripDaysContainerComponent from "../components/trip-days-container.js";
 import TripDayComponent from "../components/trip-day.js";
 import TripDayEventComponent from "../components/trip-day-event.js";
 import TripEventComponent from "../components/trip-event.js";
-
-const siteHeaderElement = document.querySelector(`.page-header`);
-const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
-const siteMainElement = document.querySelector(`.page-main`);
-const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
-const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 import {replace, render, RenderPosition} from "../utils/render.js";
+
+const tripEventsElement = document.querySelector(`.trip-events`);
+const tripInfoElement = document.querySelector(`.trip-info`);
+
 
 export default class TripController {
   constructor(container) {

@@ -8,14 +8,10 @@ import {filters} from "./mock/filter.js";
 import {menuItems} from "./mock/menu.js";
 import {cards} from "./mock/card.js";
 
-
-const siteHeaderElement = document.querySelector(`.page-header`);
-const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
+const tripEventsElement = document.querySelector(`.trip-events`);
+const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
-const siteMainElement = document.querySelector(`.page-main`);
-const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
-
 
 render(
     tripControlsElement,
