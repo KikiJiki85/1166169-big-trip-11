@@ -8,7 +8,7 @@ import TripInfoComponent from "./components/trip-info.js";
 import TripMenuComponent from "./components/trip-menu.js";
 import TripSortComponent from "./components/trip-sort.js";
 import NoPointsComponent from "./components/no-points.js";
-import {renderElement, RenderPosition} from "./utils.js";
+import {replace, render, RenderPosition} from "./utils/render.js";
 import {filters} from "./mock/filter.js";
 import {menuItems} from "./mock/menu.js";
 import {cards} from "./mock/card.js";
@@ -20,26 +20,26 @@ const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 
-renderElement(
+render(
     tripControlsElement,
-    new TripMenuComponent(menuItems).getElement(),
+    new TripMenuComponent(menuItems),
     RenderPosition.AFTERBEGIN
 );
 
-renderElement(
+render(
     tripControlsElement,
-    new FilterMenuComponent(filters).getElement()
+    new FilterMenuComponent(filters)
 );
 
-renderElement(
+render(
     tripInfoElement,
-    new TripCostComponent().getElement()
+    new TripCostComponent()
 );
 
 if (cards.length === 0) {
-  renderElement(
+  render(
       tripEventsElement,
-      new NoPointsComponent().getElement()
+      new NoPointsComponent()
   );
 } else {
 
@@ -47,21 +47,21 @@ if (cards.length === 0) {
     ...new Set(cards.map((item) => new Date(item.startDate).toDateString()))
   ];
 
-  renderElement(
+  render(
       tripInfoElement,
-      new TripInfoComponent(cards).getElement(),
+      new TripInfoComponent(cards),
       RenderPosition.AFTERBEGIN
   );
 
-  renderElement(
+  render(
       tripEventsElement,
-      new TripSortComponent().getElement(),
+      new TripSortComponent(),
       RenderPosition.AFTERBEGIN
   );
 
-  renderElement(
+  render(
       tripEventsElement,
-      new TripDaysContainerComponent().getElement()
+      new TripDaysContainerComponent()
   );
 
   const tripDaysContainer = tripEventsElement.querySelector(`.trip-days`);
@@ -76,48 +76,40 @@ if (cards.length === 0) {
     cards
       .filter((_card) => new Date(_card.startDate).toDateString() === date)
       .forEach((_card) => {
-        const tripDayEventComponent = new TripDayEventComponent(_card);
-        const cardElement = tripDayEventComponent.getElement();
-
-        const tripEventComponent = new TripEventComponent(_card);
-        const cardEditElement = tripEventComponent.getElement();
+        const cardElement = new TripDayEventComponent(_card);
+        const cardEditElement = new TripEventComponent(_card);
 
         const eventsList = day.getElement().querySelector(`.trip-events__list`);
-
-        const replaceEditToCard = () => {
-          eventsList.replaceChild(cardElement, cardEditElement);
-        };
-
-        const replaceCardToEdit = () => {
-          eventsList.replaceChild(cardEditElement, cardElement);
-        };
 
         const escKeyDownHandler = (evt) => {
           const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
           if (isEscKey) {
-            replaceEditToCard();
+            replace(cardElement, cardEditElement);
             document.removeEventListener(`keydown`, escKeyDownHandler);
           }
         };
 
-        renderElement(eventsList, cardElement);
+        render(eventsList, cardElement);
 
         cardElement
+          .getElement()
           .querySelector(`.event__rollup-btn`)
           .addEventListener(`click`, () => {
-            replaceCardToEdit();
+            replace(cardEditElement, cardElement);
             document.addEventListener(`keydown`, escKeyDownHandler);
           });
 
-        cardEditElement.addEventListener(`submit`, (evt) => {
-          evt.preventDefault();
-          replaceEditToCard();
-          document.removeEventListener(`keydown`, escKeyDownHandler);
-        });
+        cardEditElement
+          .getElement()
+          .addEventListener(`submit`, (evt) => {
+            evt.preventDefault();
+            replace(cardElement, cardEditElement);
+            document.removeEventListener(`keydown`, escKeyDownHandler);
+          });
 
       });
-    renderElement(tripDaysContainer, day.getElement());
+    render(tripDaysContainer, day);
   });
 
   const getFullPrice = cards.reduce((acc, item) => acc + item.price, 0);
