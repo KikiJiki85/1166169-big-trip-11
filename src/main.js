@@ -1,6 +1,7 @@
 import FilterMenuComponent from "./components/filter-menu.js";
 import TripCostComponent from "./components/trip-cost.js";
 import TripMenuComponent from "./components/trip-menu.js";
+import TripInfoComponent from "./components/trip-info.js";
 import NoPointsComponent from "./components/no-points.js";
 import TripControllerComponent from "./controllers/trip-controller.js";
 import {render, RenderPosition} from "./utils/render.js";
@@ -30,11 +31,21 @@ render(
 );
 
 if (cards.length === 0) {
+
   render(
       tripEventsElement,
       new NoPointsComponent()
   );
+
 } else {
+
+  render(
+      tripInfoElement,
+      new TripInfoComponent(cards),
+      RenderPosition.AFTERBEGIN
+  );
+
   const tripController = new TripControllerComponent(tripEventsElement);
   tripController.render(cards);
+
 }
