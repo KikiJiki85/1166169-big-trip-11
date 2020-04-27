@@ -1,15 +1,4 @@
-export const parseTime = (UTCTime) => {
-  const date = new Date(UTCTime);
-  return `${date.getHours()}:${date.getMinutes()}`;
-};
-
-export const parseDate = (UTCTime) => {
-  const date = new Date(UTCTime);
-  return `${date.getDate()}/${date.getMonth()}/${String(date.getFullYear())
-    .slice(2)}`;
-};
-
-export const addZero = (value) => {
+const addZero = (value) => {
   if (value === 0) {
     return `00`;
   } else if (value < 10) {
@@ -17,4 +6,15 @@ export const addZero = (value) => {
   }
 
   return value;
+};
+
+export const parseTime = (UTCTime) => {
+  const date = new Date(UTCTime);
+  return `${addZero(date.getHours())}:${addZero(date.getMinutes())}`;
+};
+
+export const parseDate = (UTCTime) => {
+  const date = new Date(UTCTime);
+  return `${date.getDate()}/${date.getMonth()}/${String(date.getFullYear())
+    .slice(2)}`;
 };
