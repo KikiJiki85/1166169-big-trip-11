@@ -105,10 +105,9 @@ export default class TripController {
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedCards = getSortedTripCards(cards, sortType);
       tripDaysElement.innerHTML = ``;
-      let isDefaultSorting = true;
-      if (sortType === SortType.TIME || sortType === SortType.PRICE) {
-        isDefaultSorting = false;
-      }
+
+      let isDefaultSorting = (sortType === SortType.EVENT) ? true : false;
+
       renderDaysAndEvents(sortedCards, tripDaysElement, isDefaultSorting);
     });
 
