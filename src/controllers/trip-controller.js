@@ -25,7 +25,7 @@ const getSortedTripCards = (cards, sortType) => {
   return sortedTripCards;
 };
 
-const renderDaysAndEvents = (cards, container, isDefaultSorting = true) => {
+const renderEvents = (cards, container, isDefaultSorting = true) => {
   const dates = isDefaultSorting
     ? [...new Set(cards.map((item) => new Date(item.startDate).toDateString()))]
     : [true];
@@ -100,7 +100,7 @@ export default class TripController {
 
     const tripDaysElement = document.querySelector(`.trip-days`);
 
-    renderDaysAndEvents(cards, tripDaysElement);
+    renderEvents(cards, tripDaysElement);
 
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedCards = getSortedTripCards(cards, sortType);
@@ -108,7 +108,7 @@ export default class TripController {
 
       let isDefaultSorting = (sortType === SortType.EVENT) ? true : false;
 
-      renderDaysAndEvents(sortedCards, tripDaysElement, isDefaultSorting);
+      renderEvents(sortedCards, tripDaysElement, isDefaultSorting);
     });
 
     const getFullPrice = cards.reduce((acc, item) => acc + item.price, 0);
