@@ -1,9 +1,8 @@
 import TripSortComponent, {SortType} from "../components/trip-sort.js";
 import TripDaysContainerComponent from "../components/trip-days-container.js";
 import TripDayComponent from "../components/trip-day.js";
-import TripDayEventComponent from "../components/trip-day-event.js";
-import TripEventComponent from "../components/trip-event.js";
-import {replace, render, RenderPosition} from "../utils/render.js";
+import {render, RenderPosition} from "../utils/render.js";
+import PointController from "../controllers/point-controller.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
@@ -35,6 +34,9 @@ const renderEvents = (cards, container, isDefaultSorting = true) => {
     const day = isDefaultSorting
       ? new TripDayComponent(new Date(date), dateIndex + 1)
       : new TripDayComponent();
+    const pointController = new PointController(
+        day.getElement().querySelector(`.trip-events__list`)
+    );
 
     cards
       .filter((_card) => {
@@ -43,40 +45,12 @@ const renderEvents = (cards, container, isDefaultSorting = true) => {
           : _card;
       })
       .forEach((_card) => {
-        const cardElement = new TripDayEventComponent(_card);
-        const cardEditElement = new TripEventComponent(_card);
-
-        const eventsList = day.getElement().querySelector(`.trip-events__list`);
-
-        const escKeyDownHandler = (evt) => {
-          const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-          if (isEscKey) {
-            replace(cardElement, cardEditElement);
-            document.removeEventListener(`keydown`, escKeyDownHandler);
-          }
-        };
-
-        render(eventsList, cardElement);
-
-        cardElement
-          .setClickHandler(() => {
-            replace(cardEditElement, cardElement);
-            document.addEventListener(`keydown`, escKeyDownHandler);
-          });
-
-        cardEditElement
-          .setSubmitHandler((evt) => {
-            evt.preventDefault();
-            replace(cardElement, cardEditElement);
-            document.removeEventListener(`keydown`, escKeyDownHandler);
-          });
-
+        pointController.render(_card);
       });
+
     render(container, day);
   });
 };
-
 
 export default class TripController {
   constructor(container) {
