@@ -28,8 +28,10 @@ const renderEvents = (
     cards,
     container,
     onDataChange,
+    onViewChange,
     isDefaultSorting = true
 ) => {
+  const pointControllers = [];
   const dates = isDefaultSorting
     ? [...new Set(cards.map((item) => new Date(item.startDate).toDateString()))]
     : [true];
@@ -49,13 +51,17 @@ const renderEvents = (
       .forEach((_card) => {
         const pointController = new PointController(
             day.getElement().querySelector(`.trip-events__list`),
-            onDataChange
+            onDataChange,
+            onViewChange
         );
         pointController.render(_card);
+        pointControllers.push(pointController);
       });
 
     render(container, day);
   });
+
+  return pointControllers;
 };
 
 export default class TripController {
@@ -64,7 +70,9 @@ export default class TripController {
     this._tripSortComponent = new TripSortComponent();
     this._tripDaysContainerComponent = new TripDaysContainerComponent();
     this._cards = [];
+    this._showedPointControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
   }
 
   render(cards) {
@@ -85,7 +93,12 @@ export default class TripController {
 
     const tripDaysElement = document.querySelector(`.trip-days`);
 
-    renderEvents(cards, tripDaysElement, this._onDataChange);
+    this._showedPointControllers = renderEvents(
+        cards,
+        tripDaysElement,
+        this._onDataChange,
+        this._onViewChange
+    );
 
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedCards = getSortedTripCards(cards, sortType);
@@ -93,7 +106,11 @@ export default class TripController {
 
       let isDefaultSorting = (sortType === SortType.EVENT) ? true : false;
 
-      renderEvents(sortedCards, tripDaysElement, isDefaultSorting);
+      this._showedPointControllers = renderEvents(
+          sortedCards,
+          tripDaysElement,
+          this._onViewChange,
+          isDefaultSorting);
     });
 
     const getFullPrice = cards.reduce((acc, item) => acc + item.price, 0);
@@ -111,5 +128,8 @@ export default class TripController {
       this._cards.slice(index + 1)
     ];
     pointController.render(newCard);
+  }
+  _onViewChange() {
+    this._showedPointControllers.forEach((it) => it.setDefaultView());
   }
 }

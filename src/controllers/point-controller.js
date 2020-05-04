@@ -1,57 +1,75 @@
 import TripDayEventComponent from "../components/trip-day-event.js";
 import TripEventComponent from "../components/trip-event.js";
 import {replace, render} from "../utils/render.js";
+import {Mode} from "../utils/common.js";
 
 export default class PointController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
-    this._cardElement = null;
-    this._cardEditElement = null;
+    this._onViewChange = onViewChange;
+    this._cardComponent = null;
+    this._cardEditComponent = null;
+    this._mode = Mode.DEFAULT;
   }
 
   render(card) {
+    const oldCardComponent = this._cardComponent;
+    const oldCardEditComponent = this._cardEditComponent;
 
-    const oldCardElement = this._cardElement;
-    const oldCardEditElement = this._cardEditElement;
+    this._cardComponent = new TripDayEventComponent(card);
+    this._cardEditComponent = new TripEventComponent(card);
 
-    this._cardElement = new TripDayEventComponent(card);
-    this._cardEditElement = new TripEventComponent(card);
-
-    const escKeyDownHandler = (evt) => {
+    const onEscKeyDown = (evt) => {
       const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
       if (isEscKey) {
-        replace(this._cardElement, this._cardEditElement);
-        document.removeEventListener(`keydown`, escKeyDownHandler);
+        this._replaceCardEditToCard();
+        document.removeEventListener(`keydown`, onEscKeyDown);
       }
     };
 
-    render(this._container, this._cardElement);
+    this._cardComponent.setClickHandler(() => {
+      this._replaceCardToCardEdit();
+      document.addEventListener(`keydown`, onEscKeyDown);
+    });
 
-    this._cardElement
-      .setClickHandler(() => {
-        replace(this._cardEditElement, this._cardElement);
-        document.addEventListener(`keydown`, escKeyDownHandler);
-      });
+    this._cardEditComponent.setSubmitHandler((evt) => {
+      evt.preventDefault();
+      this._replaceCardEditToCard();
+    });
 
-    this._cardEditElement
-      .setSubmitHandler((evt) => {
-        evt.preventDefault();
-        replace(this._cardElement, this._cardEditElement);
-        document.removeEventListener(`keydown`, escKeyDownHandler);
-      });
-
-    this._cardEditElement.setFavoriteButtonClickHandler(() => {
+    this._cardEditComponent.setFavoriteButtonClickHandler(() => {
       const newCard = Object.assign({}, card, {isFavorite: !card.isFavorite});
+
       this._onDataChange(card, newCard, this);
     });
 
-    if (oldCardEditElement && oldCardElement) {
-      replace(this._cardElement, oldCardElement);
-      replace(this._cardEditElement, oldCardEditElement);
+    if (oldCardComponent && oldCardEditComponent) {
+      replace(this._cardComponent, oldCardComponent);
+      replace(this._cardEditComponent, oldCardEditComponent);
     } else {
-      render(this._container, this._cardElement);
+      render(
+          this._container,
+          this._cardComponent
+      );
+    }
+  }
+
+  _replaceCardEditToCard() {
+    replace(this._cardComponent, this._cardEditComponent);
+    this._mode = Mode.DEFAULT;
+  }
+
+  _replaceCardToCardEdit() {
+    this._onViewChange();
+    replace(this._cardEditComponent, this._cardComponent);
+    this._mode = Mode.EDIT;
+  }
+
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceCardEditToCard();
     }
   }
 }
