@@ -3,8 +3,9 @@ import TripEventComponent from "../components/trip-event.js";
 import {replace, render} from "../utils/render.js";
 
 export default class PointController {
-  constructor(container) {
+  constructor(container, onDataChange) {
     this._container = container;
+    this.onDataChange = onDataChange;
   }
 
   render(point) {
@@ -31,6 +32,12 @@ export default class PointController {
     cardEditElement
       .setSubmitHandler((evt) => {
         evt.preventDefault();
+        replace(cardElement, cardEditElement);
+        document.removeEventListener(`keydown`, escKeyDownHandler);
+      });
+
+    cardEditElement
+      .setClickHandler(() => {
         replace(cardElement, cardEditElement);
         document.removeEventListener(`keydown`, escKeyDownHandler);
       });

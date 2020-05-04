@@ -158,7 +158,7 @@ const createTripEventTemplate = (card) => {
         class="event__favorite-checkbox  visually-hidden"
         type="checkbox"
         name="event-favorite"
-        checked
+        ${card.isFavorite && `checked`}
       />
       <label class="event__favorite-btn" for="event-favorite-1">
         <span class="visually-hidden">Add to favorite</span>
@@ -231,7 +231,14 @@ export default class TripEvent extends AbstractComponent {
   }
 
   setSubmitHandler(handler) {
-    this.getElement().addEventListener(`submit`, handler);
+    this.getElement()
+      .addEventListener(`submit`, handler);
+  }
+
+  setClickHandler(handler) {
+    this.getElement()
+      .querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
   }
 
   setFavoriteButtonClickHandler(handler) {

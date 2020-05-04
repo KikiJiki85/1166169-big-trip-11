@@ -103,7 +103,8 @@ const generateCard = () => {
       .fill(``)
       .map(getRandomPhoto),
     description: getRandomDescription(),
-    price: getRandomNumber(10, 100)
+    price: getRandomNumber(10, 100),
+    isFavorite: false
   };
 };
 
