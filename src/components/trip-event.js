@@ -235,12 +235,6 @@ export default class TripEvent extends AbstractComponent {
       .addEventListener(`submit`, handler);
   }
 
-  setClickHandler(handler) {
-    this.getElement()
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, handler);
-  }
-
   setFavoriteButtonClickHandler(handler) {
     this.getElement()
       .querySelector(`.event__favorite-checkbox`)

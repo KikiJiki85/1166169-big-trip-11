@@ -24,7 +24,12 @@ const getSortedTripCards = (cards, sortType) => {
   return sortedTripCards;
 };
 
-const renderEvents = (cards, container, isDefaultSorting = true) => {
+const renderEvents = (
+    cards,
+    container,
+    onDataChange,
+    isDefaultSorting = true
+) => {
   const dates = isDefaultSorting
     ? [...new Set(cards.map((item) => new Date(item.startDate).toDateString()))]
     : [true];
@@ -34,9 +39,6 @@ const renderEvents = (cards, container, isDefaultSorting = true) => {
     const day = isDefaultSorting
       ? new TripDayComponent(new Date(date), dateIndex + 1)
       : new TripDayComponent();
-    const pointController = new PointController(
-        day.getElement().querySelector(`.trip-events__list`)
-    );
 
     cards
       .filter((_card) => {
@@ -45,6 +47,10 @@ const renderEvents = (cards, container, isDefaultSorting = true) => {
           : _card;
       })
       .forEach((_card) => {
+        const pointController = new PointController(
+            day.getElement().querySelector(`.trip-events__list`),
+            onDataChange
+        );
         pointController.render(_card);
       });
 
@@ -57,9 +63,14 @@ export default class TripController {
     this._container = container;
     this._tripSortComponent = new TripSortComponent();
     this._tripDaysContainerComponent = new TripDaysContainerComponent();
+    this._cards = [];
+    this._onDataChange = this._onDataChange.bind(this);
   }
 
   render(cards) {
+    if (this._cards.length === 0) {
+      this._cards = cards;
+    }
 
     render(
         tripEventsElement,
@@ -74,7 +85,7 @@ export default class TripController {
 
     const tripDaysElement = document.querySelector(`.trip-days`);
 
-    renderEvents(cards, tripDaysElement);
+    renderEvents(cards, tripDaysElement, this._onDataChange);
 
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedCards = getSortedTripCards(cards, sortType);
@@ -87,5 +98,18 @@ export default class TripController {
 
     const getFullPrice = cards.reduce((acc, item) => acc + item.price, 0);
     document.querySelector(`.trip-info__cost-value`).innerHTML = getFullPrice;
+  }
+
+  _onDataChange(oldCard, newCard, pointController) {
+    const index = this._cards.findIndex((card) => card === oldCard);
+    if (index === -1) {
+      return;
+    }
+    this._cards = [
+      ...this._cards.slice(0, index),
+      newCard,
+      this._cards.slice(index + 1)
+    ];
+    pointController.render(newCard);
   }
 }

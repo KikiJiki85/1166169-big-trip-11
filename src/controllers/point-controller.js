@@ -5,41 +5,53 @@ import {replace, render} from "../utils/render.js";
 export default class PointController {
   constructor(container, onDataChange) {
     this._container = container;
-    this.onDataChange = onDataChange;
+    this._onDataChange = onDataChange;
+    this._cardElement = null;
+    this._cardEditElement = null;
   }
 
-  render(point) {
-    const cardElement = new TripDayEventComponent(point);
-    const cardEditElement = new TripEventComponent(point);
+  render(card) {
+
+    const oldCardElement = this._cardElement;
+    const oldCardEditElement = this._cardEditElement;
+
+    this._cardElement = new TripDayEventComponent(card);
+    this._cardEditElement = new TripEventComponent(card);
 
     const escKeyDownHandler = (evt) => {
       const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
       if (isEscKey) {
-        replace(cardElement, cardEditElement);
+        replace(this._cardElement, this._cardEditElement);
         document.removeEventListener(`keydown`, escKeyDownHandler);
       }
     };
 
-    render(this._container, cardElement);
+    render(this._container, this._cardElement);
 
-    cardElement
+    this._cardElement
       .setClickHandler(() => {
-        replace(cardEditElement, cardElement);
+        replace(this._cardEditElement, this._cardElement);
         document.addEventListener(`keydown`, escKeyDownHandler);
       });
 
-    cardEditElement
+    this._cardEditElement
       .setSubmitHandler((evt) => {
         evt.preventDefault();
-        replace(cardElement, cardEditElement);
+        replace(this._cardElement, this._cardEditElement);
         document.removeEventListener(`keydown`, escKeyDownHandler);
       });
 
-    cardEditElement
-      .setClickHandler(() => {
-        replace(cardElement, cardEditElement);
-        document.removeEventListener(`keydown`, escKeyDownHandler);
-      });
+    this._cardEditElement.setFavoriteButtonClickHandler(() => {
+      const newCard = Object.assign({}, card, {isFavorite: !card.isFavorite});
+      this._onDataChange(card, newCard, this);
+    });
+
+    if (oldCardEditElement && oldCardElement) {
+      replace(this._cardElement, oldCardElement);
+      replace(this._cardEditElement, oldCardEditElement);
+    } else {
+      render(this._container, this._cardElement);
+    }
   }
 }
