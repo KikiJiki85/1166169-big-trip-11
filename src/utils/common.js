@@ -8,6 +8,11 @@ const addZero = (value) => {
   return value;
 };
 
+export const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`
+};
+
 export const parseTime = (UTCTime) => {
   const date = new Date(UTCTime);
   return `${addZero(date.getHours())}:${addZero(date.getMinutes())}`;

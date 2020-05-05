@@ -1,9 +1,8 @@
 import TripSortComponent, {SortType} from "../components/trip-sort.js";
 import TripDaysContainerComponent from "../components/trip-days-container.js";
 import TripDayComponent from "../components/trip-day.js";
-import TripDayEventComponent from "../components/trip-day-event.js";
-import TripEventComponent from "../components/trip-event.js";
-import {replace, render, RenderPosition} from "../utils/render.js";
+import {render, RenderPosition} from "../utils/render.js";
+import PointController from "../controllers/point-controller.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
@@ -25,7 +24,14 @@ const getSortedTripCards = (cards, sortType) => {
   return sortedTripCards;
 };
 
-const renderEvents = (cards, container, isDefaultSorting = true) => {
+const renderEvents = (
+    cards,
+    container,
+    onDataChange,
+    onViewChange,
+    isDefaultSorting = true
+) => {
+  const pointControllers = [];
   const dates = isDefaultSorting
     ? [...new Set(cards.map((item) => new Date(item.startDate).toDateString()))]
     : [true];
@@ -43,49 +49,36 @@ const renderEvents = (cards, container, isDefaultSorting = true) => {
           : _card;
       })
       .forEach((_card) => {
-        const cardElement = new TripDayEventComponent(_card);
-        const cardEditElement = new TripEventComponent(_card);
-
-        const eventsList = day.getElement().querySelector(`.trip-events__list`);
-
-        const escKeyDownHandler = (evt) => {
-          const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-          if (isEscKey) {
-            replace(cardElement, cardEditElement);
-            document.removeEventListener(`keydown`, escKeyDownHandler);
-          }
-        };
-
-        render(eventsList, cardElement);
-
-        cardElement
-          .setClickHandler(() => {
-            replace(cardEditElement, cardElement);
-            document.addEventListener(`keydown`, escKeyDownHandler);
-          });
-
-        cardEditElement
-          .setSubmitHandler((evt) => {
-            evt.preventDefault();
-            replace(cardElement, cardEditElement);
-            document.removeEventListener(`keydown`, escKeyDownHandler);
-          });
-
+        const pointController = new PointController(
+            day.getElement().querySelector(`.trip-events__list`),
+            onDataChange,
+            onViewChange
+        );
+        pointController.render(_card);
+        pointControllers.push(pointController);
       });
+
     render(container, day);
   });
-};
 
+  return pointControllers;
+};
 
 export default class TripController {
   constructor(container) {
     this._container = container;
     this._tripSortComponent = new TripSortComponent();
     this._tripDaysContainerComponent = new TripDaysContainerComponent();
+    this._cards = [];
+    this._showedPointControllers = [];
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
   }
 
   render(cards) {
+    if (this._cards.length === 0) {
+      this._cards = cards;
+    }
 
     render(
         tripEventsElement,
@@ -100,7 +93,12 @@ export default class TripController {
 
     const tripDaysElement = document.querySelector(`.trip-days`);
 
-    renderEvents(cards, tripDaysElement);
+    this._showedPointControllers = renderEvents(
+        cards,
+        tripDaysElement,
+        this._onDataChange,
+        this._onViewChange
+    );
 
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedCards = getSortedTripCards(cards, sortType);
@@ -108,10 +106,31 @@ export default class TripController {
 
       let isDefaultSorting = (sortType === SortType.EVENT) ? true : false;
 
-      renderEvents(sortedCards, tripDaysElement, isDefaultSorting);
+      this._showedPointControllers = renderEvents(
+          sortedCards,
+          tripDaysElement,
+          this._onDataChange,
+          this._onViewChange,
+          isDefaultSorting);
     });
 
     const getFullPrice = cards.reduce((acc, item) => acc + item.price, 0);
     document.querySelector(`.trip-info__cost-value`).innerHTML = getFullPrice;
+  }
+
+  _onDataChange(oldCard, newCard, pointController) {
+    const index = this._cards.findIndex((card) => card === oldCard);
+    if (index === -1) {
+      return;
+    }
+    this._cards = [
+      ...this._cards.slice(0, index),
+      newCard,
+      this._cards.slice(index + 1)
+    ];
+    pointController.render(newCard);
+  }
+  _onViewChange() {
+    this._showedPointControllers.forEach((it) => it.setDefaultView());
   }
 }
