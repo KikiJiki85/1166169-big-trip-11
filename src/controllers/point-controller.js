@@ -11,6 +11,7 @@ export default class PointController {
     this._cardComponent = null;
     this._cardEditComponent = null;
     this._mode = Mode.DEFAULT;
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
   render(card) {
@@ -20,18 +21,9 @@ export default class PointController {
     this._cardComponent = new TripDayEventComponent(card);
     this._cardEditComponent = new TripEventComponent(card);
 
-    const onEscKeyDown = (evt) => {
-      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-      if (isEscKey) {
-        this._replaceCardEditToCard();
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
     this._cardComponent.setClickHandler(() => {
       this._replaceCardToCardEdit();
-      document.addEventListener(`keydown`, onEscKeyDown);
+      document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._cardEditComponent.setSubmitHandler((evt) => {
@@ -53,6 +45,15 @@ export default class PointController {
           this._container,
           this._cardComponent
       );
+    }
+  }
+
+  _onEscKeyDown(evt) {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      this._replaceCardEditToCard();
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 
