@@ -109,6 +109,7 @@ export default class TripController {
       this._showedPointControllers = renderEvents(
           sortedCards,
           tripDaysElement,
+          this._onDataChange,
           this._onViewChange,
           isDefaultSorting);
     });
