@@ -1,5 +1,6 @@
-import {parseDate} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 
 export default class TripEvent extends AbstractSmartComponent {
@@ -8,6 +9,9 @@ export default class TripEvent extends AbstractSmartComponent {
     this._card = card;
     this._eventType = card.type;
     this._subscribeOnEvents();
+    this._flatpickrStartDate = null;
+    this._flatpickrEndDate = null;
+    this._applyFlatpickr();
   }
 
   getTemplate() {
@@ -21,7 +25,7 @@ export default class TripEvent extends AbstractSmartComponent {
                 class="event__type-icon"
                 width="17"
                 height="17"
-                src="img/icons/${this._eventType}.png"
+                src="img/icons/${this._eventType.toLowerCase()}.png"
                 alt="Event type icon"
               />
             </label>
@@ -219,7 +223,7 @@ export default class TripEvent extends AbstractSmartComponent {
               id="event-start-time-1"
               type="text"
               name="event-start-time"
-              value="${parseDate(this._card.startDate)}"
+              value="${this._card.startDate}"
             />
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
@@ -230,7 +234,7 @@ export default class TripEvent extends AbstractSmartComponent {
               id="event-end-time-1"
               type="text"
               name="event-end-time"
-              value="${parseDate(this._card.endDate)}"
+              value="${this._card.endDate}"
             />
           </div>
           <div class="event__field-group  event__field-group--price">
@@ -346,6 +350,36 @@ export default class TripEvent extends AbstractSmartComponent {
     this.getElement()
       .querySelector(`.event__favorite-checkbox`)
       .addEventListener(`click`, handler);
+  }
+
+  rerender() {
+    super.rerender();
+    this._applyFlatpickr();
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickrStartDate || this._flatpickrEndDate) {
+      this._flatpickrStartDate.destroy();
+      this._flatpickrEndDate.destroy();
+      this._flatpickrStartDate = null;
+      this._flatpickrEndDate = null;
+    }
+    const dateElement = this.getElement();
+    const flatpickrSetup = {
+      allowInput: true,
+      enableTime: true,
+      dateFormat: `d/m/y H:i`
+    };
+
+    this._flatpickrStartDate = flatpickr(
+        dateElement.querySelector(`#event-start-time-1`),
+        flatpickrSetup
+    );
+
+    this._flatpickrEndDate = flatpickr(
+        dateElement.querySelector(`#event-end-time-1`),
+        flatpickrSetup
+    );
   }
 
   _subscribeOnEvents() {

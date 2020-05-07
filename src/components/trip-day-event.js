@@ -1,4 +1,4 @@
-import {parseTime} from "../utils/common.js";
+import {parseTime, getEventDuration} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
 const createTripDayEventTemplate = (card) => {
@@ -15,7 +15,7 @@ const createTripDayEventTemplate = (card) => {
             &mdash;
             <time class="event__end-time" datetime="2019-03-18T11:00">${parseTime(card.endDate)}</time>
           </p>
-          <p class="event__duration">30M</p>
+          <p class="event__duration">${getEventDuration(card.startDate, card.endDate)}</p>
         </div>
 
         <p class="event__price">
