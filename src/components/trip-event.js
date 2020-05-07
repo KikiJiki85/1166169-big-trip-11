@@ -21,7 +21,7 @@ export default class TripEvent extends AbstractSmartComponent {
                 class="event__type-icon"
                 width="17"
                 height="17"
-                src="img/icons/${this._eventType}.png"
+                src="img/icons/${this._eventType.toLowerCase()}.png"
                 alt="Event type icon"
               />
             </label>
