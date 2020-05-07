@@ -1,4 +1,3 @@
-import {parseDate} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
@@ -224,7 +223,7 @@ export default class TripEvent extends AbstractSmartComponent {
               id="event-start-time-1"
               type="text"
               name="event-start-time"
-              value="${parseDate(this._card.startDate)}"
+              value="${this._card.startDate}"
             />
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
@@ -235,7 +234,7 @@ export default class TripEvent extends AbstractSmartComponent {
               id="event-end-time-1"
               type="text"
               name="event-end-time"
-              value="${parseDate(this._card.endDate)}"
+              value="${this._card.endDate}"
             />
           </div>
           <div class="event__field-group  event__field-group--price">

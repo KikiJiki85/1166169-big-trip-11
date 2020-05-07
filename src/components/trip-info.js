@@ -1,13 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-
-const getDuration = (startDateUTC, endDateUTC) => {
-  const startDate = new Date(startDateUTC);
-  const monthName = startDate.toLocaleString(`default`, {month: `short`});
-  const startDay = startDate.getDate();
-  const endDay = new Date(endDateUTC).getDay();
-
-  return `${monthName} ${startDay}&nbsp;&mdash;&nbsp;${endDay}`;
-};
+import {getTripDuration} from "../utils/common.js";
 
 const createTripInfoTemplate = (cards) => {
   return (`<div class="trip-info__main">
@@ -15,7 +7,7 @@ const createTripInfoTemplate = (cards) => {
        ${cards.length > 2 ? `&mdash; ... &mdash;` : `&mdash; ${cards[1].city} &mdash;`}
        ${cards[cards.length - 1].city}</h1>
       <p class="trip-info__dates">
-      ${getDuration(cards[0].startDate, cards[cards.length - 1].endDate)}
+      ${getTripDuration(cards[0].startDate, cards[cards.length - 1].endDate)}
       </p>
     </div>`);
 };

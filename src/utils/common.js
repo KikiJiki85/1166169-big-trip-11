@@ -1,25 +1,32 @@
-const addZero = (value) => {
-  if (value === 0) {
-    return `00`;
-  } else if (value < 10) {
-    return `0${value}`;
-  }
-
-  return value;
-};
+import moment from "moment";
 
 export const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`
 };
 
-export const parseTime = (UTCTime) => {
-  const date = new Date(UTCTime);
-  return `${addZero(date.getHours())}:${addZero(date.getMinutes())}`;
+export const parseTime = (UTCTimestamp) => moment(UTCTimestamp).format(`HH:mm`);
+
+export const getTripDuration = (startDate, endDate) => {
+  const monthName = moment(startDate).format(`MMM`);
+  const startDay = moment(startDate).format(`DD`);
+  const endDay = moment(endDate).format(`DD`);
+
+  return `${monthName} ${startDay}&nbsp;&mdash;&nbsp;${endDay}`;
 };
 
-export const parseDate = (UTCTime) => {
-  const date = new Date(UTCTime);
-  return `${date.getDate()}/${date.getMonth()}/${String(date.getFullYear())
-    .slice(2)}`;
+export const getEventDuration = (startDate, endDate) => {
+  const duration = moment
+    .duration()
+    .subtract(startDate - endDate);
+
+  const days = duration.days();
+  const hours = duration.hours();
+  const minuntes = duration.minutes();
+
+  return `
+    ${(days + `D`) || ``}
+    ${(hours + `H`) || ``}
+    ${minuntes}M
+  `;
 };
