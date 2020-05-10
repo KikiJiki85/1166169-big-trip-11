@@ -8,11 +8,15 @@ import {render, RenderPosition} from "./utils/render.js";
 import {filters} from "./mock/filter.js";
 import {menuItems} from "./mock/menu.js";
 import {cards} from "./mock/card.js";
+import PointsModel from "./models/point.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
+
+const pointsModel = new PointsModel();
+pointsModel.setPoints(cards);
 
 render(
     tripControlsElement,
@@ -45,7 +49,7 @@ if (cards.length === 0) {
       RenderPosition.AFTERBEGIN
   );
 
-  const tripController = new TripControllerComponent(tripEventsElement);
+  const tripController = new TripControllerComponent(tripEventsElement, pointsModel);
   tripController.render(cards);
 
 }

@@ -65,20 +65,18 @@ const renderEvents = (
 };
 
 export default class TripController {
-  constructor(container) {
+  constructor(container, pointsModel) {
     this._container = container;
+    this._pointsModel = pointsModel;
     this._tripSortComponent = new TripSortComponent();
     this._tripDaysContainerComponent = new TripDaysContainerComponent();
-    this._cards = [];
     this._showedPointControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
   }
 
-  render(cards) {
-    if (this._cards.length === 0) {
-      this._cards = cards;
-    }
+  render() {
+    const cards = this._pointsModel.getPoints();
 
     render(
         tripEventsElement,
@@ -125,16 +123,11 @@ export default class TripController {
   }
 
   _onDataChange(oldCard, newCard, pointController) {
-    const index = this._cards.findIndex((card) => card === oldCard);
-    if (index === -1) {
-      return;
+    const isSuccess = this._pointsModel.updatePoints(oldCard.id, newCard);
+
+    if (isSuccess) {
+      pointController.render(newCard);
     }
-    this._cards = [
-      ...this._cards.slice(0, index),
-      newCard,
-      this._cards.slice(index + 1)
-    ];
-    pointController.render(newCard);
   }
   _onViewChange() {
     this._showedPointControllers.forEach((it) => it.setDefaultView());
