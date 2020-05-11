@@ -2,7 +2,7 @@ import TripSortComponent, {SortType} from "../components/trip-sort.js";
 import TripDaysContainerComponent from "../components/trip-days-container.js";
 import TripDayComponent from "../components/trip-day.js";
 import {render, RenderPosition} from "../utils/render.js";
-import PointController from "../controllers/point-controller.js";
+import PointController from "../controllers/point.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
@@ -73,6 +73,8 @@ export default class TripController {
     this._showedPointControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
+    this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
   render() {
@@ -131,5 +133,20 @@ export default class TripController {
   }
   _onViewChange() {
     this._showedPointControllers.forEach((it) => it.setDefaultView());
+  }
+
+  _onFilterChange() {
+    this._removePoints();
+    renderEvents(
+        this._pointsModel.getPoints(),
+        this._container,
+        this._onDataChange,
+        this._onViewChange
+    );
+  }
+
+  _removePoints() {
+    this._container.innerHTML = ``;
+    this._showedPointControllers = [];
   }
 }

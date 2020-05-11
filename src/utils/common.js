@@ -5,6 +5,12 @@ export const Mode = {
   EDIT: `edit`
 };
 
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
+
 export const parseTime = (UTCTimestamp) => moment(UTCTimestamp).format(`HH:mm`);
 
 export const getTripDuration = (startDate, endDate) => {
