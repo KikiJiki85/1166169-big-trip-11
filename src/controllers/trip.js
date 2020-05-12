@@ -3,6 +3,7 @@ import TripDaysContainerComponent from "../components/trip-days-container.js";
 import TripDayComponent from "../components/trip-day.js";
 import {render, RenderPosition} from "../utils/render.js";
 import PointController from "../controllers/point.js";
+import {Mode} from "../utils/common.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
@@ -54,7 +55,7 @@ const renderEvents = (
             onDataChange,
             onViewChange
         );
-        pointController.render(_card);
+        pointController.render(_card, Mode.DEFAULT);
         pointControllers.push(pointController);
       });
 
@@ -128,7 +129,7 @@ export default class TripController {
     const isSuccess = this._pointsModel.updatePoints(oldCard.id, newCard);
 
     if (isSuccess) {
-      pointController.render(newCard);
+      pointController.render(newCard, Mode.DEFAULT);
     }
   }
   _onViewChange() {

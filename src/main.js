@@ -23,11 +23,6 @@ render(
     RenderPosition.AFTERBEGIN
 );
 
-// render(
-//     tripControlsElement,
-//     new FilterMenuComponent(filters)
-// );
-
 const filterController = new FilterController(tripControlsElement, pointsModel);
 filterController.render();
 

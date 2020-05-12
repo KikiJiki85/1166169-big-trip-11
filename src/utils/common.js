@@ -2,7 +2,8 @@ import moment from "moment";
 
 export const Mode = {
   DEFAULT: `default`,
-  EDIT: `edit`
+  EDIT: `edit`,
+  ADDING: `adding`
 };
 
 export const FilterType = {

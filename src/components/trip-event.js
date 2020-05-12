@@ -1,6 +1,33 @@
-import AbstractSmartComponent from "./abstract-smart-component.js";
+import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
+import moment from "moment";
+
+const parseFormData = (formData, offers, photos, description, id) => {
+  return {
+    type: formData.get(`event-type`),
+    city: formData.get(`event-destination`),
+    startDate: moment(
+        formData.get(`event-start-time`),
+        `YY/MM/DD HH:mm`
+    ).valueOf(),
+    endDate: moment(formData.get(`event-end-time`), `YY/MM/DD HH:mm`).valueOf(),
+    offers: offers.map((offer) => {
+      return {
+        name: offer.name,
+        price: offer.price,
+        type: offer.type,
+        checked:
+          formData.get(`event-offer-${offer.type}`) === `on` ? true : false
+      };
+    }),
+    photos,
+    description,
+    price: formData.get(`event-price`),
+    // isFavorite,
+    id
+  };
+};
 
 
 export default class TripEvent extends AbstractSmartComponent {
@@ -13,6 +40,7 @@ export default class TripEvent extends AbstractSmartComponent {
     this._flatpickrEndDate = null;
     this._submitHandler = null;
     this._favoriteButtonClickHandler = null;
+    this._deleteButtonClickHandler = null;
 
     this._applyFlatpickr();
   }
@@ -28,7 +56,7 @@ export default class TripEvent extends AbstractSmartComponent {
                 class="event__type-icon"
                 width="17"
                 height="17"
-                src="img/icons/${this._eventType.toLowerCase()}.png"
+                src="img/icons/${this._eventType}.png"
                 alt="Event type icon"
               />
             </label>
@@ -37,9 +65,11 @@ export default class TripEvent extends AbstractSmartComponent {
               id="event-type-toggle-1"
               type="checkbox"
             />
+
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-taxi-1"
@@ -55,6 +85,7 @@ export default class TripEvent extends AbstractSmartComponent {
                     >Taxi</label
                   >
                 </div>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-bus-1"
@@ -70,6 +101,7 @@ export default class TripEvent extends AbstractSmartComponent {
                     >Bus</label
                   >
                 </div>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-train-1"
@@ -85,6 +117,7 @@ export default class TripEvent extends AbstractSmartComponent {
                     >Train</label
                   >
                 </div>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-ship-1"
@@ -100,6 +133,7 @@ export default class TripEvent extends AbstractSmartComponent {
                     >Ship</label
                   >
                 </div>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-transport-1"
@@ -115,6 +149,7 @@ export default class TripEvent extends AbstractSmartComponent {
                     >Transport</label
                   >
                 </div>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-drive-1"
@@ -130,6 +165,7 @@ export default class TripEvent extends AbstractSmartComponent {
                     >Drive</label
                   >
                 </div>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-flight-1"
@@ -146,8 +182,10 @@ export default class TripEvent extends AbstractSmartComponent {
                   >
                 </div>
               </fieldset>
+
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-check-in-1"
@@ -163,6 +201,7 @@ export default class TripEvent extends AbstractSmartComponent {
                     >Check-in</label
                   >
                 </div>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-sightseeing-1"
@@ -178,6 +217,7 @@ export default class TripEvent extends AbstractSmartComponent {
                     >Sightseeing</label
                   >
                 </div>
+
                 <div class="event__type-item">
                   <input
                     id="event-type-restaurant-1"
@@ -196,6 +236,7 @@ export default class TripEvent extends AbstractSmartComponent {
               </fieldset>
             </div>
           </div>
+
           <div class="event__field-group  event__field-group--destination">
             <label
               class="event__label  event__type-output"
@@ -217,6 +258,7 @@ export default class TripEvent extends AbstractSmartComponent {
               <option value="Chamonix"></option>
             </datalist>
           </div>
+
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">
               From
@@ -240,6 +282,7 @@ export default class TripEvent extends AbstractSmartComponent {
               value="${this._card.endDate}"
             />
           </div>
+
           <div class="event__field-group  event__field-group--price">
             <label class="event__label" for="event-price-1">
               <span class="visually-hidden">Price</span>
@@ -253,10 +296,12 @@ export default class TripEvent extends AbstractSmartComponent {
               value="${this._card.price}"
             />
           </div>
+
           <button class="event__save-btn  btn  btn--blue" type="submit">
             Save
           </button>
           <button class="event__reset-btn" type="reset">Delete</button>
+
           <input
             id="event-favorite-1"
             class="event__favorite-checkbox  visually-hidden"
@@ -277,15 +322,18 @@ export default class TripEvent extends AbstractSmartComponent {
               />
             </svg>
           </label>
+
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
+
         <section class="event__details">
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">
               Offers
             </h3>
+
             <div class="event__available-offers">
             ${this._card.offers
               .map((offer) => {
@@ -298,8 +346,9 @@ export default class TripEvent extends AbstractSmartComponent {
                       name="event-offer-${offer.type}"
                       ${offer.checked && `checked`}
                     />
-                    <label class="event__offer-label" for="event-offer-
-                    ${offer.type}-1">
+                    <label class="event__offer-label" for="event-offer-${
+  offer.type
+}-1">
                       <span class="event__offer-title">${offer.name}</span>
                       &plus; &euro;&nbsp;<span class="event__offer-price">
                       ${offer.price}
@@ -311,6 +360,7 @@ export default class TripEvent extends AbstractSmartComponent {
               .join(``)}
             </div>
           </section>
+
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">
               Destination
@@ -318,6 +368,7 @@ export default class TripEvent extends AbstractSmartComponent {
             <p class="event__destination-description">
             ${this._card.description}
             </p>
+
             <div class="event__photos-container">
               <div class="event__photos-tape">
               ${this._card.photos
@@ -343,11 +394,13 @@ export default class TripEvent extends AbstractSmartComponent {
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this.setFavoriteButtonClickHandler(this._favoriteButtonClickHandler);
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
   }
 
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
+
     this._submitHandler = handler;
   }
 
@@ -359,9 +412,40 @@ export default class TripEvent extends AbstractSmartComponent {
     this._favoriteButtonClickHandler = handler;
   }
 
+  setDeleteButtonClickHandler(handler) {
+    this.getElement()
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+
+    this._deleteButtonClickHandler = handler;
+  }
+
+  getData() {
+    const form = this.getElement().querySelector(`.event--edit`);
+    const formData = new FormData(form);
+
+    return parseFormData(
+        formData,
+        this._card.offers,
+        this._card.photos,
+        this._card.description,
+        this._card.id
+    );
+  }
+
   rerender() {
     super.rerender();
     this._applyFlatpickr();
+  }
+
+  removeElement() {
+    if (this._flatpickrStartDate || this._flatpickrEndDate) {
+      this._flatpickrStartDate.destroy();
+      this._flatpickrEndDate.destroy();
+      this._flatpickrStartDate = null;
+      this._flatpickrEndDate = null;
+    }
+    super.removeElement();
   }
 
   _applyFlatpickr() {
@@ -373,19 +457,19 @@ export default class TripEvent extends AbstractSmartComponent {
     }
     const dateElement = this.getElement();
     const flatpickrSetup = {
+      dateFormat: `d/m/y H:i`,
       allowInput: true,
       enableTime: true,
-      dateFormat: `d/m/y H:i`
     };
 
     this._flatpickrStartDate = flatpickr(
         dateElement.querySelector(`#event-start-time-1`),
-        flatpickrSetup
+        Object.assign({}, flatpickrSetup, {defaultDate: this._card.startDate})
     );
 
     this._flatpickrEndDate = flatpickr(
         dateElement.querySelector(`#event-end-time-1`),
-        flatpickrSetup
+        Object.assign({}, flatpickrSetup, {defaultDate: this._card.endDate})
     );
   }
 

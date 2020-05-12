@@ -20,8 +20,8 @@ const createFilterMenuTemplate = (filters) => {
             ${filter.checked && `checked`}
             >
             <label class="trip-filters__filter-label"
-            for="filter-${filter.name}"
-            >${filter.name}</label>
+            for="filter-${filter.name}">
+            ${filter.name}</label>
           </div>`;
         })
     .join(``)}
