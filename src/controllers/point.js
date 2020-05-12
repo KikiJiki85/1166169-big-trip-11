@@ -3,7 +3,7 @@ import TripEventComponent from "../components/trip-event.js";
 import {replace, render, remove, RenderPosition} from "../utils/render.js";
 import {Mode} from "../utils/common.js";
 
-const emptyPoint = {
+export const EmptyPoint = {
   type: ``,
   city: ``,
   startDate: null,
@@ -42,7 +42,6 @@ export default class PointController {
 
     this._cardEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      this._replaceCardEditToCard();
       const data = this._cardEditComponent.getData();
       this._onDataChange(card, data, this);
     });
@@ -90,7 +89,7 @@ export default class PointController {
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
-        this._onDataChange(emptyPoint, null, this);
+        this._onDataChange(EmptyPoint, null, this);
       }
       this._replaceCardEditToCard();
       document.removeEventListener(`keydown`, this._onEscKeyDown);

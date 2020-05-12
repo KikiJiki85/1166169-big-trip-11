@@ -21,7 +21,7 @@ export default class Point {
     this._points = Array.from(points);
   }
 
-  updatePoints(id, point) {
+  updatePoint(id, point) {
     const index = this._points.findIndex((it) => it.id === id);
 
     if (index === -1) {
