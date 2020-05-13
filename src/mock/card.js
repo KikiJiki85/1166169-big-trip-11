@@ -118,4 +118,17 @@ const generateCards = (amount) => {
   );
 };
 
+export const EmptyPoint = {
+  type: `taxi`,
+  city: ``,
+  startDate: Date.now(),
+  endDate: Date.now(),
+  offers: [],
+  photos: [],
+  description: ``,
+  price: 0,
+  isFavorite: false,
+  id: String(Date.now() + Math.random())
+};
+
 export const cards = generateCards(CARDS_AMOUNT);

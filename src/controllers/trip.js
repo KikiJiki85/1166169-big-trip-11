@@ -2,14 +2,15 @@ import TripSortComponent, {SortType} from "../components/trip-sort.js";
 import TripDaysContainerComponent from "../components/trip-days-container.js";
 import TripDayComponent from "../components/trip-day.js";
 import {render, RenderPosition} from "../utils/render.js";
-import PointController, {EmptyPoint} from "../controllers/point.js";
+import PointController from "../controllers/point.js";
 import {Mode} from "../utils/common.js";
+import {EmptyPoint} from "../mock/card.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 const getSortedTripCards = (pointsModel, sortType) => {
   let sortedTripCards = [];
-  const showingTripCards = pointsModel.getPoints();
+  const showingTripCards = pointsModel.getPoints().slice();
 
   switch (sortType) {
     case SortType.EVENT:
@@ -85,9 +86,8 @@ export default class TripController {
       return;
     }
 
-    const tripDaysElement = this._container.getElement();
     this._creatingPoint = new PointController(
-        tripDaysElement,
+        this._container.getElement(),
         this._onDataChange,
         this._onViewChange
     );
@@ -99,7 +99,7 @@ export default class TripController {
   _updatePoints() {
     this._removePoints();
 
-    renderEvents(
+    this._showedPointControllers = renderEvents(
         this._pointsModel.getPoints(),
         this._container,
         this._onDataChange,
@@ -109,7 +109,6 @@ export default class TripController {
   }
 
   render() {
-    const cards = this._pointsModel.getPoints();
 
     render(
         tripEventsElement,
@@ -123,7 +122,7 @@ export default class TripController {
     );
 
     this._showedPointControllers = renderEvents(
-        cards,
+        this._pointsModel.getPoints(),
         this._container,
         this._onDataChange,
         this._onViewChange,
@@ -142,7 +141,7 @@ export default class TripController {
           this._isDefaultSorting);
     });
 
-    const getFullPrice = cards.reduce((acc, item) => {
+    const getFullPrice = this._pointsModel.getPoints().reduce((acc, item) => {
       return (
         acc +
         item.price +

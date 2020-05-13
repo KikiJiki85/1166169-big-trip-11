@@ -2,19 +2,7 @@ import TripDayEventComponent from "../components/trip-day-event.js";
 import TripEventComponent from "../components/trip-event.js";
 import {replace, render, remove, RenderPosition} from "../utils/render.js";
 import {Mode} from "../utils/common.js";
-
-export const EmptyPoint = {
-  type: `taxi`,
-  city: ``,
-  startDate: null,
-  endDate: null,
-  offers: [],
-  photos: [],
-  description: ``,
-  price: 0,
-  isFavorite: false,
-  id: String(Date.now() + Math.random())
-};
+import {EmptyPoint} from "../mock/card.js";
 
 export default class PointController {
   constructor(container, onDataChange, onViewChange) {

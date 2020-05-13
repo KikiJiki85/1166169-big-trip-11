@@ -25,6 +25,7 @@ const createTripDayEventTemplate = (card) => {
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
           ${card.offers
+            .filter((offer) => offer.checked)
             .map((offer) => {
               return `
           <li class="event__offer">

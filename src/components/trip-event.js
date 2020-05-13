@@ -24,7 +24,8 @@ const parseFormData = (formData, offers, photos, description, id) => {
     photos,
     description,
     price: formData.get(`event-price`),
-    id
+    id,
+    isFavorite: formData.get(`event-favorite`) === `on`
   };
 };
 
@@ -300,7 +301,7 @@ export default class TripEvent extends AbstractSmartComponent {
             Save
           </button>
           <button class="event__reset-btn" type="reset">${
-  this._card.startDate === null ? `Cancel` : `Delete`
+  this._card.offers.length > 0 ? `Delete` : `Cancel`
 }</button>
 
           <input
@@ -329,7 +330,9 @@ export default class TripEvent extends AbstractSmartComponent {
           </button>
         </header>
 
-        <section class="event__details">
+        ${
+  this._card.offers.length
+    ? `<section class="event__details">
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">
               Offers
@@ -386,7 +389,9 @@ export default class TripEvent extends AbstractSmartComponent {
               </div>
             </div>
           </section>
-        </section>
+        </section>`
+    : ``
+}
       </form>
     </li>
   `;
