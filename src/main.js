@@ -11,11 +11,13 @@ import {menuItems} from "./mock/menu.js";
 import {cards} from "./mock/card.js";
 
 import PointsModel from "./models/point.js";
+import TripDaysContainer from "./components/trip-days-container.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
+const tripDaysComponent = new TripDaysContainer();
 
 
 const pointsModel = new PointsModel();
@@ -35,6 +37,11 @@ render(
     new TripCostComponent()
 );
 
+render(
+    tripEventsElement,
+    tripDaysComponent
+);
+
 if (cards.length === 0) {
 
   render(
@@ -50,7 +57,7 @@ if (cards.length === 0) {
       RenderPosition.AFTERBEGIN
   );
 
-  const tripController = new TripController(tripEventsElement, pointsModel);
+  const tripController = new TripController(tripDaysComponent, pointsModel);
   tripController.render(cards);
 
   document
