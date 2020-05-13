@@ -30,7 +30,7 @@ const renderEvents = (
     container,
     onDataChange,
     onViewChange,
-    isDefaultSorting = true
+    isDefaultSorting
 ) => {
   const pointControllers = [];
   const dates = isDefaultSorting
@@ -59,7 +59,7 @@ const renderEvents = (
         pointControllers.push(pointController);
       });
 
-    render(container, day);
+    render(container.getElement(), day);
   });
 
   return pointControllers;
@@ -77,6 +77,7 @@ export default class TripController {
     this._onFilterChange = this._onFilterChange.bind(this);
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
     this._creatingPoint = null;
+    this._isDefaultSorting = true;
   }
 
   createPoint() {
@@ -92,6 +93,7 @@ export default class TripController {
     );
 
     this._creatingPoint.render(EmptyPoint, Mode.ADDING);
+    this._onViewChange();
   }
 
   _updatePoints() {
@@ -101,7 +103,8 @@ export default class TripController {
         this._pointsModel.getPoints(),
         this._container,
         this._onDataChange,
-        this._onViewChange
+        this._onViewChange,
+        this._isDefaultSorting
     );
   }
 
@@ -119,27 +122,24 @@ export default class TripController {
         this._tripDaysContainerComponent
     );
 
-    const tripDaysElement = document.querySelector(`.trip-days`);
-
     this._showedPointControllers = renderEvents(
         cards,
-        tripDaysElement,
+        this._container,
         this._onDataChange,
-        this._onViewChange
+        this._onViewChange,
+        this._isDefaultSorting
     );
 
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedCards = getSortedTripCards(this._pointsModel, sortType);
-      tripDaysElement.innerHTML = ``;
-
-      let isDefaultSorting = (sortType === SortType.EVENT) ? true : false;
-
+      this._isDefaultSorting = (sortType === SortType.EVENT) ? true : false;
+      this._removePoints();
       this._showedPointControllers = renderEvents(
           sortedCards,
-          tripDaysElement,
+          this._container,
           this._onDataChange,
           this._onViewChange,
-          isDefaultSorting);
+          this._isDefaultSorting);
     });
 
     const getFullPrice = cards.reduce((acc, item) => {
@@ -160,15 +160,21 @@ export default class TripController {
         this._updatePoints();
       } else {
         this._pointsModel.addPoint(newCard);
-        pointController.render(newCard, Mode.DEFAULT);
-
-        const destroyedPoint = this._showedPointControllers.pop();
-        destroyedPoint.destroy();
 
         this._showedPointControllers = [
           pointController,
           ...this._showedPointControllers
         ];
+
+        this._removePoints();
+
+        this._showedPointControllers = renderEvents(
+            this._pointsModel.getPoints(),
+            this._container,
+            this._onDataChange,
+            this._onViewChange,
+            this._isDefaultSorting
+        );
       }
     } else if (newCard === null) {
       this._pointsModel.removePoint(oldCard.id);

@@ -4,7 +4,7 @@ import {replace, render, remove, RenderPosition} from "../utils/render.js";
 import {Mode} from "../utils/common.js";
 
 export const EmptyPoint = {
-  type: ``,
+  type: `taxi`,
   city: ``,
   startDate: null,
   endDate: null,
