@@ -256,6 +256,7 @@ export default class TripEvent extends AbstractSmartComponent {
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
               <option value="Chamonix"></option>
+              <option value="Saint Petersburg"></option>
             </datalist>
           </div>
 
