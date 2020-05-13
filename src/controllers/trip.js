@@ -7,16 +7,16 @@ import {Mode} from "../utils/common.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-const getSortedTripCards = (cards, sortType) => {
+const getSortedTripCards = (pointsModel, sortType) => {
   let sortedTripCards = [];
-  const showingTripCards = cards.slice();
+  const showingTripCards = pointsModel.getPoints();
 
   switch (sortType) {
     case SortType.EVENT:
-      sortedTripCards = showingTripCards;
+      sortedTripCards = showingTripCards.sort((a, b) => a.startDate - b.startDate);
       break;
     case SortType.TIME:
-      sortedTripCards = showingTripCards.sort((a, b) => b.startDate - a.startDate);
+      sortedTripCards = showingTripCards.sort((a, b) => (b.endDate - b.startDate) - (a.endDate - a.startDate));
       break;
     case SortType.PRICE:
       sortedTripCards = showingTripCards.sort((a, b) => b.price - a.price);
@@ -129,7 +129,7 @@ export default class TripController {
     );
 
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
-      let sortedCards = getSortedTripCards(cards, sortType);
+      let sortedCards = getSortedTripCards(this._pointsModel, sortType);
       tripDaysElement.innerHTML = ``;
 
       let isDefaultSorting = (sortType === SortType.EVENT) ? true : false;
@@ -190,6 +190,7 @@ export default class TripController {
   }
 
   _removePoints() {
+    this._container.getElement().innerHTML = ``;
     this._showedPointControllers.forEach((pointController) =>
       pointController.destroy()
     );
