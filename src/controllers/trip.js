@@ -3,9 +3,9 @@ import TripDaysContainerComponent from "../components/trip-days-container.js";
 import TripDayComponent from "../components/trip-day.js";
 import {render, RenderPosition} from "../utils/render.js";
 import PointController from "../controllers/point.js";
-import {Mode} from "../utils/common.js";
+import {Mode, FilterType} from "../utils/common.js";
 import {EmptyPoint} from "../mock/card.js";
-
+import TripFilterComponent from "../components/filter-menu.js";
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 const getSortedTripCards = (pointsModel, sortType) => {
@@ -72,6 +72,7 @@ export default class TripController {
     this._pointsModel = pointsModel;
     this._tripSortComponent = new TripSortComponent();
     this._tripDaysContainerComponent = new TripDaysContainerComponent();
+    this._filterMenuComponent = new TripFilterComponent();
     this._showedPointControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
@@ -85,6 +86,19 @@ export default class TripController {
     if (this._creatingPoint) {
       return;
     }
+    this._pointsModel.setFilter(FilterType.EVERYTHING);
+
+    this._removePoints();
+    this._showedPointControllers = renderEvents(
+        getSortedTripCards(this._pointsModel, SortType.EVENT),
+        this._container,
+        this._onDataChange,
+        this._onViewChange,
+        this._isDefaultSorting = true);
+
+    this._filterMenuComponent.setDefaulFilterType();
+    this._tripSortComponent.setDefaulSortType();
+
 
     this._creatingPoint = new PointController(
         this._container.getElement(),

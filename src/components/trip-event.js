@@ -251,6 +251,7 @@ export default class TripEvent extends AbstractSmartComponent {
               name="event-destination"
               value="${this._card.city}"
               list="destination-list-1"
+              required
             />
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>

@@ -46,4 +46,8 @@ export default class FilterMenu extends AbstractComponent {
       handler(filterName);
     });
   }
+
+  setDefaulFilterType() {
+    document.querySelector(`#filter-everything`).checked = true;
+  }
 }
