@@ -2,7 +2,14 @@ import moment from "moment";
 
 export const Mode = {
   DEFAULT: `default`,
-  EDIT: `edit`
+  EDIT: `edit`,
+  ADDING: `adding`
+};
+
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
 };
 
 export const parseTime = (UTCTimestamp) => moment(UTCTimestamp).format(`HH:mm`);

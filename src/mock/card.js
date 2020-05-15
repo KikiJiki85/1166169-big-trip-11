@@ -37,16 +37,16 @@ const offers = [
 const cities = [`Amsterdam`, `Geneva`, `Chaomix`, `Saint Petersburg`];
 
 const types = [
-  `Taxi`,
-  `Bus`,
-  `Train`,
-  `Ship`,
-  `Transport`,
-  `Drive`,
-  `Flight`,
-  `Check-in`,
-  `Sightseeing`,
-  `Restaurant`
+  `taxi`,
+  `bus`,
+  `train`,
+  `ship`,
+  `transport`,
+  `drive`,
+  `flight`,
+  `check-in`,
+  `sightseeing`,
+  `restaurant`
 ];
 
 const sentences = [
@@ -94,6 +94,7 @@ const generateCard = () => {
   const startDate = getRandomDate();
   const endDate = getRandomDate();
   return {
+    id: String(Date.now() + Math.random()),
     type: getRandomArrayItem(types),
     city: getRandomArrayItem(cities),
     startDate: Math.min(startDate, endDate),
@@ -115,6 +116,20 @@ const generateCards = (amount) => {
   .sort(
       (currentCard, nextCard) => currentCard.startDate - nextCard.startDate
   );
+};
+
+export const EmptyPoint = {
+  type: `taxi`,
+  city: ``,
+  startDate: Date.now(),
+  endDate: Date.now(),
+  offers: [],
+  photos: [],
+  description: ``,
+  price: 0,
+  isFavorite: false,
+  id: String(Date.now() + Math.random()),
+  isNew: true
 };
 
 export const cards = generateCards(CARDS_AMOUNT);

@@ -55,6 +55,10 @@ export default class TripSort extends AbstractComponent {
     return this._currentSortType;
   }
 
+  setDefaulSortType() {
+    this.getElement().querySelector(`#sort-event`).checked = true;
+  }
+
   setSortTypeChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
 

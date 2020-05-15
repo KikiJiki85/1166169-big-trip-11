@@ -1,18 +1,27 @@
-import FilterMenuComponent from "./components/filter-menu.js";
-import TripCostComponent from "./components/trip-cost.js";
 import TripMenuComponent from "./components/trip-menu.js";
-import TripInfoComponent from "./components/trip-info.js";
 import NoPointsComponent from "./components/no-points.js";
-import TripControllerComponent from "./controllers/trip-controller.js";
+import TripCostComponent from "./components/trip-cost.js";
+import TripInfoComponent from "./components/trip-info.js";
+
+import TripController from "./controllers/trip.js";
+import FilterController from "./controllers/filter.js";
+
 import {render, RenderPosition} from "./utils/render.js";
-import {filters} from "./mock/filter.js";
 import {menuItems} from "./mock/menu.js";
 import {cards} from "./mock/card.js";
+
+import PointsModel from "./models/point.js";
+import TripDaysContainer from "./components/trip-days-container.js";
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
+const tripDaysComponent = new TripDaysContainer();
+
+
+const pointsModel = new PointsModel();
+pointsModel.setPoints(cards);
 
 render(
     tripControlsElement,
@@ -20,14 +29,17 @@ render(
     RenderPosition.AFTERBEGIN
 );
 
-render(
-    tripControlsElement,
-    new FilterMenuComponent(filters)
-);
+const filterController = new FilterController(tripControlsElement, pointsModel);
+filterController.render();
 
 render(
     tripInfoElement,
     new TripCostComponent()
+);
+
+render(
+    tripEventsElement,
+    tripDaysComponent
 );
 
 if (cards.length === 0) {
@@ -45,7 +57,13 @@ if (cards.length === 0) {
       RenderPosition.AFTERBEGIN
   );
 
-  const tripController = new TripControllerComponent(tripEventsElement);
+  const tripController = new TripController(tripDaysComponent, pointsModel);
   tripController.render(cards);
+
+  document
+    .querySelector(`.trip-main__event-add-btn`)
+    .addEventListener(`click`, () => {
+      tripController.createPoint();
+    });
 
 }

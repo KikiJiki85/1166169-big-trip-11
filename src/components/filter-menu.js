@@ -1,4 +1,9 @@
 import AbstractComponent from "./abstract-component.js";
+const FILTER_ID_PREFIX = `filter_`;
+
+const getFilterNameById = (id) => {
+  return id.substring(FILTER_ID_PREFIX.length);
+};
 
 const createFilterMenuTemplate = (filters) => {
   return (`<form class="trip-filters" action="#" method="get">
@@ -15,8 +20,8 @@ const createFilterMenuTemplate = (filters) => {
             ${filter.checked && `checked`}
             >
             <label class="trip-filters__filter-label"
-            for="filter-${filter.name}"
-            >${filter.name}</label>
+            for="filter-${filter.name}">
+            ${filter.name}</label>
           </div>`;
         })
     .join(``)}
@@ -33,5 +38,16 @@ export default class FilterMenu extends AbstractComponent {
 
   getTemplate() {
     return createFilterMenuTemplate(this._filters);
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      const filterName = getFilterNameById(evt.target.id);
+      handler(filterName);
+    });
+  }
+
+  setDefaulFilterType() {
+    document.querySelector(`#filter-everything`).checked = true;
   }
 }
