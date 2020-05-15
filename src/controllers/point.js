@@ -28,15 +28,23 @@ export default class PointController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
+    this._cardEditComponent.setClickHandler(() => {
+      this._replaceCardEditToCard();
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
+    });
+
+
     this._cardEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       const data = this._cardEditComponent.getData();
       this._onDataChange(card, data, this);
+      document.querySelector(`.trip-main__event-add-btn`).disabled = false;
     });
 
-    this._cardEditComponent.setDeleteButtonClickHandler(() =>
-      this._onDataChange(card, null, this)
-    );
+    this._cardEditComponent.setDeleteButtonClickHandler(() => {
+      this._onDataChange(card, null, this);
+      document.querySelector(`.trip-main__event-add-btn`).disabled = false;
+    });
 
     this._cardEditComponent.setFavoriteButtonClickHandler(() => {
       const newCard = Object.assign({}, card, {isFavorite: !card.isFavorite});
@@ -81,6 +89,7 @@ export default class PointController {
       }
       this._replaceCardEditToCard();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
+      document.querySelector(`.trip-main__event-add-btn`).disabled = false;
     }
   }
 

@@ -108,6 +108,7 @@ export default class TripController {
 
     this._creatingPoint.render(EmptyPoint, Mode.ADDING);
     this._onViewChange();
+    document.querySelector(`.trip-main__event-add-btn`).disabled = true;
   }
 
   _updatePoints() {

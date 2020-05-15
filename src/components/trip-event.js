@@ -47,7 +47,7 @@ export default class TripEvent extends AbstractSmartComponent {
 
   getTemplate() {
     return `<li class="trip-events__item">
-    <form class="event  event--edit" action="#" method="post">
+    <form class="event  event--edit ${this._card.isNew ? `trip-events__item` : ``}" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -303,10 +303,11 @@ export default class TripEvent extends AbstractSmartComponent {
             Save
           </button>
           <button class="event__reset-btn" type="reset">${
-  this._card.offers.length > 0 ? `Delete` : `Cancel`
+  this._card.isNew ? `Cancel` : `Delete`
 }</button>
-
-          <input
+${
+  !this._card.isNew
+    ? `<input
             id="event-favorite-1"
             class="event__favorite-checkbox  visually-hidden"
             type="checkbox"
@@ -327,9 +328,11 @@ export default class TripEvent extends AbstractSmartComponent {
             </svg>
           </label>
 
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+<button class="event__rollup-btn" type="button">
+                <span class="visually-hidden">Open event</span>
+              </button>`
+    : ``
+}
         </header>
 
         ${
@@ -413,11 +416,13 @@ export default class TripEvent extends AbstractSmartComponent {
   }
 
   setFavoriteButtonClickHandler(handler) {
-    this.getElement()
-      .querySelector(`.event__favorite-checkbox`)
-      .addEventListener(`click`, handler);
+    if (!this._card.isNew) {
+      this.getElement()
+        .querySelector(`.event__favorite-checkbox`)
+        .addEventListener(`click`, handler);
 
-    this._favoriteButtonClickHandler = handler;
+      this._favoriteButtonClickHandler = handler;
+    }
   }
 
   setDeleteButtonClickHandler(handler) {
@@ -491,5 +496,13 @@ export default class TripEvent extends AbstractSmartComponent {
           this.rerender();
         }
       });
+  }
+
+  setClickHandler(handler) {
+    if (!this._card.isNew) {
+      this.getElement()
+        .querySelector(`.event__rollup-btn`)
+        .addEventListener(`click`, handler);
+    }
   }
 }
