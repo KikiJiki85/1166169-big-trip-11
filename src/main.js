@@ -22,12 +22,11 @@ const tripDaysComponent = new TripDaysContainer();
 
 const siteMainElement = document.querySelector(`.page-body__page-main`);
 const menuComponent = new TripMenuComponent(menuItems);
-const statisticsComponent = new StatisticsComponent();
-
 
 const pointsModel = new PointsModel();
 pointsModel.setPoints(cards);
 const tripController = new TripController(tripDaysComponent, pointsModel);
+const statisticsComponent = new StatisticsComponent(pointsModel);
 
 render(tripControlsElement, menuComponent, RenderPosition.AFTERBEGIN);
 
