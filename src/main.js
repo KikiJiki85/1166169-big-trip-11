@@ -1,7 +1,6 @@
 import TripMenuComponent from "./components/trip-menu.js";
-import NoPointsComponent from "./components/no-points.js";
 import TripCostComponent from "./components/trip-cost.js";
-import TripInfoComponent from "./components/trip-info.js";
+
 import StatisticsComponent from "./components/statistics.js";
 
 import TripController from "./controllers/trip.js";
@@ -43,30 +42,13 @@ render(
     tripDaysComponent
 );
 
-if (cards.length === 0) {
+tripController.render(cards);
 
-  render(
-      tripEventsElement,
-      new NoPointsComponent()
-  );
-
-} else {
-
-  render(
-      tripInfoElement,
-      new TripInfoComponent(cards),
-      RenderPosition.AFTERBEGIN
-  );
-
-  tripController.render(cards);
-
-  document
-    .querySelector(`.trip-main__event-add-btn`)
-    .addEventListener(`click`, () => {
-      tripController.createPoint();
-    });
-
-}
+document
+  .querySelector(`.trip-main__event-add-btn`)
+  .addEventListener(`click`, () => {
+    tripController.createPoint();
+  });
 
 render(siteMainElement, statisticsComponent);
 statisticsComponent.hide();

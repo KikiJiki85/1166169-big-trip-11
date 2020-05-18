@@ -2,6 +2,7 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import moment from "moment";
+import {getRandomOffers, getRandomPhotos, getRandomDescription} from "../mock/card.js";
 
 const parseFormData = (formData, offers, photos, description, id) => {
   return {
@@ -35,6 +36,11 @@ export default class TripEvent extends AbstractSmartComponent {
     super();
     this._card = card;
     this._eventType = card.type;
+    this._city = card.city;
+    this._offers = [...card.offers];
+    this._photos = [...card.photos];
+    this._description = card.description;
+    this._price = card.price;
     this._subscribeOnEvents();
     this._flatpickrStartDate = null;
     this._flatpickrEndDate = null;
@@ -249,7 +255,7 @@ export default class TripEvent extends AbstractSmartComponent {
               id="event-destination-1"
               type="text"
               name="event-destination"
-              value="${this._card.city}"
+              value="${this._city}"
               list="destination-list-1"
               required
             />
@@ -295,7 +301,7 @@ export default class TripEvent extends AbstractSmartComponent {
               id="event-price-1"
               type="text"
               name="event-price"
-              value="${this._card.price}"
+              value="${this._price}"
             />
           </div>
 
@@ -335,16 +341,15 @@ ${
 }
         </header>
 
+        <section class="event__details">
         ${
-  this._card.offers.length
-    ? `<section class="event__details">
-          <section class="event__section  event__section--offers">
+  this._offers.length
+    ? `<section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">
               Offers
             </h3>
-
             <div class="event__available-offers">
-            ${this._card.offers
+            ${this._offers
               .map((offer) => {
                 return `
                   <div class="event__offer-selector">
@@ -368,7 +373,9 @@ ${
               })
               .join(``)}
             </div>
-          </section>
+          </section>`
+    : ``
+}
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">
@@ -380,7 +387,7 @@ ${
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-              ${this._card.photos
+              ${this._photos
                 .map((photo) => {
                   return `
                     <img
@@ -394,9 +401,7 @@ ${
               </div>
             </div>
           </section>
-        </section>`
-    : ``
-}
+        </section>
       </form>
     </li>
   `;
@@ -439,9 +444,9 @@ ${
 
     return parseFormData(
         formData,
-        this._card.offers,
-        this._card.photos,
-        this._card.description,
+        this._offers,
+        this._photos,
+        this._description,
         this._card.id
     );
   }
@@ -493,9 +498,26 @@ ${
       .addEventListener(`click`, (evt) => {
         if (evt.target.tagName === `INPUT`) {
           this._eventType = evt.target.value;
+          this._offers = getRandomOffers();
           this.rerender();
         }
       });
+
+    element
+    .querySelector(`.event__input--destination`)
+    .addEventListener(`change`, (evt) => {
+      this._city = evt.target.value;
+
+      this._photos = getRandomPhotos();
+      this._description = getRandomDescription();
+      this.rerender();
+    });
+
+    element
+    .querySelector(`.event__input--price`)
+    .addEventListener(`change`, (evt) => {
+      this._price = evt.target.value;
+    });
   }
 
   setClickHandler(handler) {

@@ -3,6 +3,18 @@ import Chart from "chart.js";
 import chartjsPluginDatalabes from "chartjs-plugin-datalabels";
 import moment from "moment";
 
+const LegendName = {
+  MONEY: `MONEY`,
+  TRANSPORT: `TRANSPORT`,
+  TIME: `TIME SPEND`
+};
+
+const LabelPrefix = {
+  EURO: `€`,
+  TIMES: `x`,
+  HOURS: `h`
+};
+
 const generateChartsData = (points) => {
   const moneyStatistics = {};
   const transportStatistics = {
@@ -13,6 +25,7 @@ const generateChartsData = (points) => {
     transport: 0,
     drive: 0
   };
+
   const timeStatictics = {};
 
   points.forEach((point) => {
@@ -56,7 +69,7 @@ const generateChartsData = (points) => {
   };
 };
 
-const renderChart = (ctx, data, label, legend, labelPositon) => {
+const renderChart = (ctx, data, label, legend, isLabelPositionLeft = false) => {
   return new Chart(ctx, {
     type: `horizontalBar`,
     plugins: [chartjsPluginDatalabes],
@@ -120,9 +133,7 @@ const renderChart = (ctx, data, label, legend, labelPositon) => {
           anchor: `end`,
           align: `left`,
           formatter(value) {
-            return labelPositon === `left`
-              ? `${label}${value}`
-              : `${value}${label}`;
+            return isLabelPositionLeft ? `${label}${value}` : `${value}${label}`;
           }
         }
       }
@@ -180,14 +191,25 @@ export default class Statistics extends AbstractSmartComponent {
         this._pointsModel.getPoints()
     );
 
-    this._moneyChart = renderChart(moneyCtx, moneyData, `€`, `money`, `left`);
+    this._moneyChart = renderChart(
+        moneyCtx,
+        moneyData,
+        LabelPrefix.EURO,
+        LegendName.MONEY,
+        true
+    );
     this._transportChart = renderChart(
         transportCtx,
         transportData,
-        `x`,
-        `transport`
+        LabelPrefix.TIMES,
+        LegendName.TRANSPORT
     );
-    this._timeChart = renderChart(timeCtx, timeData, `h`, `time`);
+    this._timeChart = renderChart(
+        timeCtx,
+        timeData,
+        LabelPrefix.HOURS,
+        LegendName.TIME
+    );
   }
 
   rerender() {
