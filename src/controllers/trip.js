@@ -1,12 +1,16 @@
 import TripSortComponent, {SortType} from "../components/trip-sort.js";
 import TripDaysContainerComponent from "../components/trip-days-container.js";
 import TripDayComponent from "../components/trip-day.js";
-import {render, RenderPosition} from "../utils/render.js";
+import NoPointsComponent from "../components/no-points.js";
+import TripInfoComponent from "../components/trip-info.js";
+
+import {render, remove, RenderPosition} from "../utils/render.js";
 import PointController from "../controllers/point.js";
 import {Mode, FilterType} from "../utils/common.js";
 import {EmptyPoint} from "../mock/card.js";
 import TripFilterComponent from "../components/filter-menu.js";
 const tripEventsElement = document.querySelector(`.trip-events`);
+const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
 
 const getSortedTripCards = (pointsModel, sortType) => {
   let sortedTripCards = [];
@@ -70,7 +74,7 @@ export default class TripController {
   constructor(container, pointsModel) {
     this._container = container;
     this._pointsModel = pointsModel;
-    this._tripSortComponent = new TripSortComponent();
+    this._tripSortComponent = null;
     this._tripDaysContainerComponent = new TripDaysContainerComponent();
     this._filterMenuComponent = new TripFilterComponent();
     this._showedPointControllers = [];
@@ -79,6 +83,8 @@ export default class TripController {
     this._onFilterChange = this._onFilterChange.bind(this);
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
     this._creatingPoint = null;
+    this._noPointsComponent = null;
+    this._tripInfoComponent = null;
     this._isDefaultSorting = true;
   }
 
@@ -123,18 +129,52 @@ export default class TripController {
     );
   }
 
+  _toggleNoEventsMessageComponent() {
+    if (this._pointsModel.getPoints().length === 0) {
+      if (!this._noEventsMessageComponent) {
+        this._noEventsMessageComponent = new NoPointsComponent();
+        render(
+            tripEventsElement,
+            this._noEventsMessageComponent
+        );
+      }
+    } else {
+      if (this._noEventsMessageComponent) {
+        remove(this._noEventsMessageComponent);
+        this._noEventsMessageComponent = null;
+        this.render();
+      }
+    }
+    this._reset();
+  }
+
+  _reset() {
+    this._container.getElement().innerHTML = ``;
+    this._getFullPrice();
+
+    if (this._tripInfoComponent) {
+      remove(this._tripInfoComponent);
+    }
+    if (this._tripSortComponent) {
+      remove(this._tripSortComponent);
+    }
+
+    if (this._pointsModel.getPoints().length) {
+      this._tripSortComponent = new TripSortComponent();
+      this._tripInfoComponent = new TripInfoComponent(
+          this._pointsModel.getPoints()
+      );
+
+      this.render();
+    }
+  }
+
   render() {
 
-    render(
-        tripEventsElement,
-        this._tripSortComponent,
-        RenderPosition.AFTERBEGIN
-    );
-
-    render(
-        tripEventsElement,
-        this._tripDaysContainerComponent
-    );
+    if (this._pointsModel.getPoints().length === 0) {
+      this._toggleNoEventsMessageComponent();
+      return;
+    }
 
     this._showedPointControllers = renderEvents(
         this._pointsModel.getPoints(),
@@ -143,6 +183,11 @@ export default class TripController {
         this._onViewChange,
         this._isDefaultSorting
     );
+
+    this._tripSortComponent = new TripSortComponent();
+    this._tripInfoComponent = new TripInfoComponent(this._pointsModel.getPoints());
+    render(tripInfoElement, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+    render(tripEventsElement, this._tripSortComponent, RenderPosition.AFTERBEGIN);
 
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedCards = getSortedTripCards(this._pointsModel, sortType);
@@ -156,14 +201,18 @@ export default class TripController {
           this._isDefaultSorting);
     });
 
-    const getFullPrice = this._pointsModel.getPoints().reduce((acc, item) => {
+    this._getFullPrice();
+  }
+
+  _getFullPrice() {
+    const fullPrice = this._pointsModel.getPoints().reduce((acc, item) => {
       return (
         acc +
-        item.price +
-        item.offers.reduce((_acc, _item) => _acc + _item.price, 0)
+        Number(item.price) +
+        item.offers.reduce((_acc, _item) => _acc + Number(_item.price), 0)
       );
     }, 0);
-    document.querySelector(`.trip-info__cost-value`).innerHTML = getFullPrice;
+    document.querySelector(`.trip-info__cost-value`).innerHTML = fullPrice;
   }
 
   _onDataChange(oldCard, newCard, pointController) {
@@ -200,7 +249,10 @@ export default class TripController {
         pointController.render(newCard, Mode.DEFAULT);
       }
     }
+
+    this._toggleNoEventsMessageComponent();
   }
+
   _onViewChange() {
     this._showedPointControllers.forEach((it) => it.setDefaultView());
   }
@@ -215,5 +267,13 @@ export default class TripController {
       pointController.destroy()
     );
     this._showedPointControllers = [];
+  }
+
+  hide() {
+    this._container.hide();
+  }
+
+  show() {
+    this._container.show();
   }
 }

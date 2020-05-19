@@ -78,7 +78,7 @@ const getRandomNumber = (min, max) => {
 
 const getRandomArrayItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-const getRandomDescription = () =>
+export const getRandomDescription = () =>
   shuffleArray(sentences)
     .slice(0, getRandomNumber(1, 4))
     .join(` `);
@@ -133,3 +133,10 @@ export const EmptyPoint = {
 };
 
 export const cards = generateCards(CARDS_AMOUNT);
+
+export const getRandomOffers = () => shuffleArray(offers).slice(2);
+
+export const getRandomPhotos = () =>
+  Array(5)
+    .fill(``)
+    .map(getRandomPhoto);
