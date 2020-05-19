@@ -187,6 +187,7 @@ export default class TripController {
     this._tripSortComponent = new TripSortComponent();
     this._tripInfoComponent = new TripInfoComponent(this._pointsModel.getPoints());
     render(tripInfoElement, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+    render(tripEventsElement, this._tripSortComponent, RenderPosition.AFTERBEGIN);
 
     this._tripSortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedCards = getSortedTripCards(this._pointsModel, sortType);
