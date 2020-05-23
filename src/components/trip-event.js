@@ -1,34 +1,9 @@
 import AbstractSmartComponent from "./abstract-smart-component";
+import {EventTypeToPlaceholderText} from "../utils/common.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
-import moment from "moment";
+import {nanoid} from "nanoid";
 import Store from "../store.js";
-
-const parseFormData = (formData, offers, photos, description, id) => {
-  return {
-    type: formData.get(`event-type`),
-    city: formData.get(`event-destination`),
-    startDate: moment(
-        formData.get(`event-start-time`),
-        `DD/MM/YY HH:mm`
-    ).valueOf(),
-    endDate: moment(formData.get(`event-end-time`), `DD/MM/YY HH:mm`).valueOf(),
-    offers: offers.map((offer) => {
-      return {
-        name: offer.name,
-        price: offer.price,
-        type: offer.type,
-        checked:
-          formData.get(`event-offer-${offer.type}`) === `on` ? true : false
-      };
-    }),
-    photos,
-    description,
-    price: formData.get(`event-price`),
-    id,
-    isFavorite: formData.get(`event-favorite`) === `on`
-  };
-};
 
 
 export default class TripEvent extends AbstractSmartComponent {
@@ -248,7 +223,7 @@ export default class TripEvent extends AbstractSmartComponent {
               class="event__label  event__type-output"
               for="event-destination-1"
             >
-            ${this._eventType} at
+            ${this._eventType} ${EventTypeToPlaceholderText[this._eventType]}
             </label>
             <input
               class="event__input  event__input--destination"
@@ -353,19 +328,18 @@ ${
             <div class="event__available-offers">
             ${this._offers
               .map((offer) => {
+                const offerId = nanoid();
                 return `
                   <div class="event__offer-selector">
                     <input
                       class="event__offer-checkbox  visually-hidden"
-                      id="event-offer-${this._card.type}-1"
+                      id="event-offer-${offerId}-1"
                       type="checkbox"
-                      name="event-offer-${this._card.type}"
+                      name="event-offer-${offerId}"
                       ${offer.checked && `checked`}
                     />
-                    <label class="event__offer-label" for="event-offer-${
-  this._card.type
-}-1">
-                      <span class="event__offer-title">${offer.name}</span>
+                    <label class="event__offer-label" for="event-offer-${offerId}-1">
+                      <span class="event__offer-title">${offer.title}</span>
                       &plus; &euro;&nbsp;<span class="event__offer-price">
                       ${offer.price}
                       </span>
@@ -383,8 +357,8 @@ ${
             <h3 class="event__section-title  event__section-title--destination">
               Destination
             </h3>
-            <p class="event__destination-description">
-            ${this._card.description}
+            <p class="event__destination-description" name="event-description">
+            ${this._description}
             </p>
 
             <div class="event__photos-container">
@@ -442,15 +416,7 @@ ${
 
   getData() {
     const form = this.getElement().querySelector(`.event--edit`);
-    const formData = new FormData(form);
-
-    return parseFormData(
-        formData,
-        this._offers,
-        this._photos,
-        this._description,
-        this._card.id
-    );
+    return new FormData(form);
   }
 
   rerender() {

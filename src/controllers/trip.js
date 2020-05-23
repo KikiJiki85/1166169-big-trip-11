@@ -5,9 +5,8 @@ import NoPointsComponent from "../components/no-points.js";
 import TripInfoComponent from "../components/trip-info.js";
 
 import {render, remove, RenderPosition} from "../utils/render.js";
-import PointController from "../controllers/point.js";
+import PointController, {EmptyPoint} from "../controllers/point.js";
 import {Mode, FilterType} from "../utils/common.js";
-import {EmptyPoint} from "../mock/card.js";
 import TripFilterComponent from "../components/filter-menu.js";
 const tripEventsElement = document.querySelector(`.trip-events`);
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
@@ -71,7 +70,7 @@ const renderEvents = (
 };
 
 export default class TripController {
-  constructor(container, pointsModel) {
+  constructor(container, pointsModel, api) {
     this._container = container;
     this._pointsModel = pointsModel;
     this._tripSortComponent = null;
@@ -86,6 +85,7 @@ export default class TripController {
     this._noPointsComponent = null;
     this._tripInfoComponent = null;
     this._isDefaultSorting = true;
+    this._api = api;
   }
 
   createPoint() {
@@ -243,11 +243,13 @@ export default class TripController {
       this._pointsModel.removePoint(oldCard.id);
       this._updatePoints();
     } else {
-      const isSuccess = this._pointsModel.updatePoint(oldCard.id, newCard);
-
-      if (isSuccess) {
-        pointController.render(newCard, Mode.DEFAULT);
-      }
+      this._api.updatePoint(oldCard.id, newCard).then((pointModel) => {
+        const isSuccess = this._pointsModel.updatePoint(oldCard.id, pointModel);
+        if (isSuccess) {
+          pointController.render(pointModel, Mode.DEFAULT);
+          this._updatePoints();
+        }
+      });
     }
 
     this._toggleNoEventsMessageComponent();

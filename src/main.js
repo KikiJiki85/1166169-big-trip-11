@@ -7,8 +7,7 @@ import TripController from "./controllers/trip.js";
 import FilterController from "./controllers/filter.js";
 
 import {render, RenderPosition} from "./utils/render.js";
-import {AUTHORIZATION, END_POINT} from "./utils/common.js";
-import {menuItems, MenuItem} from "./mock/menu.js";
+import {AUTHORIZATION, END_POINT, MenuItem, menuItems} from "./utils/common.js";
 
 import PointsModel from "./models/points.js";
 import API from "./api.js";
@@ -25,7 +24,7 @@ const menuComponent = new TripMenuComponent(menuItems);
 const api = new API(END_POINT, AUTHORIZATION);
 const pointsModel = new PointsModel();
 
-const tripController = new TripController(tripDaysComponent, pointsModel);
+const tripController = new TripController(tripDaysComponent, pointsModel, api);
 const statisticsComponent = new StatisticsComponent(pointsModel);
 
 Promise.all([api.getDestinations(), api.getOffers(), api.getPoints()]).then(

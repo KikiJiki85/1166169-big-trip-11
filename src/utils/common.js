@@ -19,6 +19,35 @@ export const FilterType = {
   PAST: `past`
 };
 
+export const EventTypeToPlaceholderText = {
+  "taxi": `to`,
+  "bus": `to`,
+  "train": `to`,
+  "ship": `to`,
+  "transport": `to`,
+  "drive": `to`,
+  "flight": `to`,
+  "check-in": `at`,
+  "sightseeing": `at`,
+  "restaurant": `at`
+};
+
+export const MenuItem = {
+  TABLE: `Table`,
+  STATS: `Stats`
+};
+
+export const menuItems = [
+  {
+    name: MenuItem.TABLE,
+    active: true
+  },
+  {
+    name: MenuItem.STATS,
+    active: false
+  }
+];
+
 export const AUTHORIZATION = `Basic aEd666estfeqe5Ehj`;
 export const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 

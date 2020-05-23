@@ -2,7 +2,54 @@ import TripDayEventComponent from "../components/trip-day-event.js";
 import TripEventComponent from "../components/trip-event.js";
 import {replace, render, remove, RenderPosition} from "../utils/render.js";
 import {Mode} from "../utils/common.js";
-import {EmptyPoint} from "../mock/card.js";
+import moment from "moment";
+import PointModel from "../models/point.js";
+import Store from "../store.js";
+
+export const EmptyPoint = {
+  type: `taxi`,
+  city: ``,
+  startDate: Date.now(),
+  endDate: Date.now(),
+  offers: [],
+  photos: [],
+  description: ``,
+  price: 0,
+  isFavorite: false,
+  id: String(Date.now() + Math.random()),
+  isNew: true
+};
+
+const parseFormData = (formData) => {
+  const offerLabels = [
+    ...document.querySelectorAll(`label[for^="event-offer"]`)
+  ];
+  const destination = Store.getDestinations().find(
+      (city) => city.name === formData.get(`event-destination`)
+  );
+
+  return new PointModel({
+    base_price: formData.get(`event-price`),
+    date_from: new Date(
+        moment(formData.get(`event-start-time`), `DD/MM/YY HH:mm`).valueOf()
+    ).toISOString(),
+    date_to: new Date(
+        moment(formData.get(`event-end-time`), `DD/MM/YY HH:mm`).valueOf()
+    ).toISOString(),
+    destination: {
+      description: destination.description,
+      name: destination.name,
+      pictures: destination.pictures
+    },
+    is_favorite: formData.get(`event-favorite`) === `on` ? true : false,
+    offers: offerLabels.map((offer) => ({
+      title: offer.querySelector(`.event__offer-title`).textContent,
+      price: Number(offer.querySelector(`.event__offer-price`).textContent)
+    })),
+    type: formData.get(`event-type`)
+  });
+};
+
 
 export default class PointController {
   constructor(container, onDataChange, onViewChange) {
@@ -36,7 +83,9 @@ export default class PointController {
 
     this._cardEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._cardEditComponent.getData();
+      const formData = this._cardEditComponent.getData();
+      const data = parseFormData(formData);
+
       this._onDataChange(card, data, this);
       document.querySelector(`.trip-main__event-add-btn`).disabled = false;
     });
@@ -47,7 +96,9 @@ export default class PointController {
     });
 
     this._cardEditComponent.setFavoriteButtonClickHandler(() => {
-      const newCard = Object.assign({}, card, {isFavorite: !card.isFavorite});
+      // const newCard = Object.assign({}, card, {isFavorite: !card.isFavorite});
+      const newCard = PointModel.clone(card);
+      newCard.isFavorite = !newCard.isFavorite;
 
       this._onDataChange(card, newCard, this);
     });
