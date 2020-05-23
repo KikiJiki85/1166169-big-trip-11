@@ -1,5 +1,12 @@
 import moment from "moment";
 
+export const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
 export const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
@@ -11,6 +18,9 @@ export const FilterType = {
   FUTURE: `future`,
   PAST: `past`
 };
+
+export const AUTHORIZATION = `Basic aEd666estfeqe5Ehj`;
+export const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
 export const parseTime = (UTCTimestamp) => moment(UTCTimestamp).format(`HH:mm`);
 

@@ -2,7 +2,7 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import moment from "moment";
-import {getRandomOffers, getRandomPhotos, getRandomDescription} from "../mock/card.js";
+import Store from "../store.js";
 
 const parseFormData = (formData, offers, photos, description, id) => {
   return {
@@ -260,10 +260,12 @@ export default class TripEvent extends AbstractSmartComponent {
               required
             />
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
-              <option value="Saint Petersburg"></option>
+            ${Store.getDestinations()
+              .map((destination) => {
+                return `<option value="${destination.name}"></option>`;
+              })
+              .join(``)}
+
             </datalist>
           </div>
 
@@ -355,13 +357,13 @@ ${
                   <div class="event__offer-selector">
                     <input
                       class="event__offer-checkbox  visually-hidden"
-                      id="event-offer-${offer.type}-1"
+                      id="event-offer-${this._card.type}-1"
                       type="checkbox"
-                      name="event-offer-${offer.type}"
+                      name="event-offer-${this._card.type}"
                       ${offer.checked && `checked`}
                     />
                     <label class="event__offer-label" for="event-offer-${
-  offer.type
+  this._card.type
 }-1">
                       <span class="event__offer-title">${offer.name}</span>
                       &plus; &euro;&nbsp;<span class="event__offer-price">
@@ -392,8 +394,8 @@ ${
                   return `
                     <img
                       class="event__photo"
-                      src="${photo}"
-                      alt="Event photo"
+                      src="${photo.src}"
+                      alt="${photo.description}"
                     />
                   `;
                 })
@@ -478,6 +480,7 @@ ${
       dateFormat: `d/m/y H:i`,
       allowInput: true,
       enableTime: true,
+      minDate: this._card.startDate
     };
 
     this._flatpickrStartDate = flatpickr(
@@ -498,7 +501,9 @@ ${
       .addEventListener(`click`, (evt) => {
         if (evt.target.tagName === `INPUT`) {
           this._eventType = evt.target.value;
-          this._offers = getRandomOffers();
+          this._offers = Store.getOffers().find(
+              (offer) => offer.type === this._eventType
+          ).offers;
           this.rerender();
         }
       });
@@ -508,8 +513,11 @@ ${
     .addEventListener(`change`, (evt) => {
       this._city = evt.target.value;
 
-      this._photos = getRandomPhotos();
-      this._description = getRandomDescription();
+      this._photos = this._card.photos;
+      const city = Store.getDestinations().find(
+          (destination) => destination.name === this._city
+      );
+      this._description = city ? city.description : ``;
       this.rerender();
     });
 
