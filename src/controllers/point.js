@@ -1,7 +1,7 @@
 import TripDayEventComponent from "../components/trip-day-event.js";
 import TripEventComponent from "../components/trip-event.js";
 import {replace, render, remove, RenderPosition} from "../utils/render.js";
-import {Mode} from "../utils/common.js";
+import {Mode, SHAKE_ANIMATION_TIMEOUT} from "../utils/common.js";
 import moment from "moment";
 import PointModel from "../models/point.js";
 import Store from "../store.js";
@@ -83,6 +83,10 @@ export default class PointController {
 
     this._cardEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+      this._cardEditComponent.setData({
+        saveButtonText: `Saving...`
+      });
+
       const formData = this._cardEditComponent.getData();
       const data = parseFormData(formData);
 
@@ -91,12 +95,14 @@ export default class PointController {
     });
 
     this._cardEditComponent.setDeleteButtonClickHandler(() => {
+      this._cardEditComponent.setData({
+        deleteButtonText: `Deleting...`
+      });
       this._onDataChange(card, null, this);
       document.querySelector(`.trip-main__event-add-btn`).disabled = false;
     });
 
     this._cardEditComponent.setFavoriteButtonClickHandler(() => {
-      // const newCard = Object.assign({}, card, {isFavorite: !card.isFavorite});
       const newCard = PointModel.clone(card);
       newCard.isFavorite = !newCard.isFavorite;
 
@@ -153,6 +159,23 @@ export default class PointController {
     this._onViewChange();
     replace(this._cardEditComponent, this._cardComponent);
     this._mode = Mode.EDIT;
+  }
+
+  shake() {
+    this._cardEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT /
+      1000}s`;
+    this._cardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT /
+      1000}s`;
+
+    setTimeout(() => {
+      this._cardEditComponent.getElement().style.animation = ``;
+      this._cardComponent.getElement().style.animation = ``;
+
+      this._cardEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   setDefaultView() {

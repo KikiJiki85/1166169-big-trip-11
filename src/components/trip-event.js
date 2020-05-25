@@ -1,5 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart-component";
-import {EventTypeToPlaceholderText} from "../utils/common.js";
+import {EventTypeToPlaceholderText, DefaultData} from "../utils/common.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import {nanoid} from "nanoid";
@@ -15,6 +15,7 @@ export default class TripEvent extends AbstractSmartComponent {
     this._offers = [...card.offers];
     this._photos = [...card.photos];
     this._description = card.description;
+    this._externalData = DefaultData;
     this._price = card.price;
     this._subscribeOnEvents();
     this._flatpickrStartDate = null;
@@ -276,17 +277,17 @@ export default class TripEvent extends AbstractSmartComponent {
             <input
               class="event__input  event__input--price"
               id="event-price-1"
-              type="text"
+              type="number"
               name="event-price"
               value="${this._price}"
             />
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">
-            Save
+          ${this._externalData.saveButtonText}
           </button>
           <button class="event__reset-btn" type="reset">${
-  this._card.isNew ? `Cancel` : `Delete`
+  this._card.isNew ? `Cancel` : this._externalData.deleteButtonText
 }</button>
 ${
   !this._card.isNew
@@ -434,6 +435,11 @@ ${
     super.removeElement();
   }
 
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
+  }
+
   _applyFlatpickr() {
     if (this._flatpickrStartDate || this._flatpickrEndDate) {
       this._flatpickrStartDate.destroy();
@@ -479,11 +485,11 @@ ${
     .addEventListener(`change`, (evt) => {
       this._city = evt.target.value;
 
-      this._photos = this._card.photos;
       const city = Store.getDestinations().find(
           (destination) => destination.name === this._city
       );
       this._description = city ? city.description : ``;
+      this._photos = city ? city.pictures : [];
       this.rerender();
     });
 

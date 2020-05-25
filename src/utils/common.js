@@ -1,5 +1,7 @@
 import moment from "moment";
 
+export const SHAKE_ANIMATION_TIMEOUT = 700;
+
 export const Method = {
   GET: `GET`,
   POST: `POST`,
@@ -17,6 +19,11 @@ export const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
   PAST: `past`
+};
+
+export const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`
 };
 
 export const EventTypeToPlaceholderText = {
