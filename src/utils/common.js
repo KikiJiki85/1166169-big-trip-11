@@ -1,6 +1,14 @@
 import moment from "moment";
 
 export const SHAKE_ANIMATION_TIMEOUT = 700;
+export const MAX_SHOWED_OFFERS_AMOUNT = 3;
+
+export const Button = {
+  SAVE: `Save`,
+  DELETE: `Delete`,
+  SAVING: `Saving...`,
+  DELETING: `Deleting...`
+};
 
 export const Method = {
   GET: `GET`,

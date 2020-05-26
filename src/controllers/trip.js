@@ -150,7 +150,6 @@ export default class TripController {
 
   _reset() {
     this._container.getElement().innerHTML = ``;
-    this._getFullPrice();
 
     if (this._tripInfoComponent) {
       remove(this._tripInfoComponent);
@@ -167,6 +166,7 @@ export default class TripController {
 
       this.render();
     }
+    this._getFullPrice();
   }
 
   render() {

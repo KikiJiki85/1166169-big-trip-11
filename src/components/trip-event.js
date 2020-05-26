@@ -27,6 +27,7 @@ export default class TripEvent extends AbstractSmartComponent {
     this._applyFlatpickr();
   }
 
+
   getTemplate() {
     return `<li class="trip-events__item">
     <form class="event  event--edit ${this._card.isNew ? `trip-events__item` : ``}" action="#" method="post">
@@ -277,14 +278,14 @@ export default class TripEvent extends AbstractSmartComponent {
             <input
               class="event__input  event__input--price"
               id="event-price-1"
-              type="number"
+              type="text"
               name="event-price"
               value="${this._price}"
             />
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">
-          ${this._externalData.saveButtonText}
+            ${this._externalData.saveButtonText}
           </button>
           <button class="event__reset-btn" type="reset">${
   this._card.isNew ? `Cancel` : this._externalData.deleteButtonText
@@ -319,17 +320,24 @@ ${
 }
         </header>
 
-        <section class="event__details">
         ${
-  this._offers.length
+  this._city || this._offers.length > 0
+    ? `<section class="event__details">
+        ${
+  this._offers.length > 0 ||
+          Store.getOffersByType(this._eventType).length > 0
     ? `<section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">
               Offers
             </h3>
+
             <div class="event__available-offers">
-            ${this._offers
+            ${Store.getOffersByType(this._eventType)
               .map((offer) => {
                 const offerId = nanoid();
+                const selectedOffer = this._offers.find(
+                    (_offer) => _offer.title === offer.title
+                );
                 return `
                   <div class="event__offer-selector">
                     <input
@@ -337,12 +345,12 @@ ${
                       id="event-offer-${offerId}-1"
                       type="checkbox"
                       name="event-offer-${offerId}"
-                      ${offer.checked && `checked`}
+                      ${selectedOffer && `checked`}
                     />
                     <label class="event__offer-label" for="event-offer-${offerId}-1">
                       <span class="event__offer-title">${offer.title}</span>
                       &plus; &euro;&nbsp;<span class="event__offer-price">
-                      ${offer.price}
+                      ${selectedOffer ? selectedOffer.price : offer.price}
                       </span>
                     </label>
                   </div>
@@ -354,7 +362,9 @@ ${
     : ``
 }
 
-          <section class="event__section  event__section--destination">
+          ${
+  this._city
+    ? `<section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">
               Destination
             </h3>
@@ -377,17 +387,21 @@ ${
                 .join(``)}
               </div>
             </div>
-          </section>
-        </section>
+          </section>`
+    : ``
+}
+        </section>`
+    : ``
+}
       </form>
     </li>
   `;
   }
-
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this.setFavoriteButtonClickHandler(this._favoriteButtonClickHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
+    this.setClickHandler(this._clickHandler);
     this._subscribeOnEvents();
   }
 
@@ -423,6 +437,17 @@ ${
   rerender() {
     super.rerender();
     this._applyFlatpickr();
+  }
+
+  reset() {
+    this._eventType = this._card.type;
+    this._city = this._card.city;
+    this._offers = this._card.offers;
+    this._photos = this._card.photos;
+    this._price = this._card.price;
+    this._description = this._card.description;
+
+    this.rerender();
   }
 
   removeElement() {
@@ -468,36 +493,39 @@ ${
 
   _subscribeOnEvents() {
     const element = this.getElement();
+
     element
       .querySelector(`.event__type-list`)
       .addEventListener(`click`, (evt) => {
         if (evt.target.tagName === `INPUT`) {
           this._eventType = evt.target.value;
-          this._offers = Store.getOffers().find(
-              (offer) => offer.type === this._eventType
-          ).offers;
+          this._offers = Store.getOffersByType(this._eventType);
           this.rerender();
+          this.getElement()
+            .querySelector(`form`)
+            .classList.add(`trip-events__item`);
         }
       });
 
     element
-    .querySelector(`.event__input--destination`)
-    .addEventListener(`change`, (evt) => {
-      this._city = evt.target.value;
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, (evt) => {
+        this._city = evt.target.value;
 
-      const city = Store.getDestinations().find(
-          (destination) => destination.name === this._city
-      );
-      this._description = city ? city.description : ``;
-      this._photos = city ? city.pictures : [];
-      this.rerender();
-    });
+        const city = Store.getDestinations().find(
+            (destination) => destination.name === this._city
+        );
+        this._description = city ? city.description : ``;
+        this._photos = city ? city.pictures : [];
+
+        this.rerender();
+      });
 
     element
-    .querySelector(`.event__input--price`)
-    .addEventListener(`change`, (evt) => {
-      this._price = evt.target.value;
-    });
+      .querySelector(`.event__input--price`)
+      .addEventListener(`change`, (evt) => {
+        this._price = evt.target.value;
+      });
   }
 
   setClickHandler(handler) {
@@ -505,6 +533,14 @@ ${
       this.getElement()
         .querySelector(`.event__rollup-btn`)
         .addEventListener(`click`, handler);
+      this._clickHandler = handler;
     }
+  }
+
+  blockForm() {
+    const form = this.getElement().querySelector(`form`);
+
+    form.querySelectorAll(`input`).forEach((input) => (input.disabled = true));
+    form.querySelectorAll(`button`).forEach((button) => (button.disabled = true));
   }
 }
