@@ -26,28 +26,18 @@ const pointsModel = new PointsModel();
 
 const tripController = new TripController(tripDaysComponent, pointsModel, api);
 const statisticsComponent = new StatisticsComponent(pointsModel);
+const filterController = new FilterController(tripControlsElement, pointsModel);
 
-Promise.all([api.getDestinations(), api.getOffers(), api.getPoints()]).then(
-    (values) => {
-      pointsModel.setPoints(values[2]);
-      tripController.render(values[2]);
-    }
-);
+api.getData()
+  .then((points) => {
+    pointsModel.setPoints(points);
+    filterController.render();
+    tripController.render();
+  });
 
 render(tripControlsElement, menuComponent, RenderPosition.AFTERBEGIN);
-
-const filterController = new FilterController(tripControlsElement, pointsModel);
-filterController.render();
-
-render(
-    tripInfoElement,
-    new TripCostComponent()
-);
-
-render(
-    tripEventsElement,
-    tripDaysComponent
-);
+render(tripInfoElement, new TripCostComponent());
+render(tripEventsElement, tripDaysComponent);
 
 
 document

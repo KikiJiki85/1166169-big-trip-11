@@ -2,6 +2,8 @@ import {Method} from "./utils/common.js";
 import Point from "./models/point.js";
 import Store from "./store.js";
 
+const URLS = [`destinations`, `offers`, `points`];
+
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response;
@@ -24,6 +26,19 @@ export default class API {
       .catch((err) => {
         throw err;
       });
+  }
+
+  getData() {
+    const requests = URLS.map((it) => this._load({url: it}));
+    return Promise.all(requests)
+      .then((responses) => Promise.all(responses.map((it) => it.json())))
+      .then((responses) => {
+        const [destinations, offers, points] = responses;
+        Store.setDestinations(destinations);
+        Store.setOffers(offers);
+        return points;
+      })
+      .then(Point.parsePoints);
   }
 
   getPoints() {
