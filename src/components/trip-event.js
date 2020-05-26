@@ -1,34 +1,9 @@
 import AbstractSmartComponent from "./abstract-smart-component";
+import {EventTypeToPlaceholderText, DefaultData} from "../utils/common.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
-import moment from "moment";
-import {getRandomOffers, getRandomPhotos, getRandomDescription} from "../mock/card.js";
-
-const parseFormData = (formData, offers, photos, description, id) => {
-  return {
-    type: formData.get(`event-type`),
-    city: formData.get(`event-destination`),
-    startDate: moment(
-        formData.get(`event-start-time`),
-        `DD/MM/YY HH:mm`
-    ).valueOf(),
-    endDate: moment(formData.get(`event-end-time`), `DD/MM/YY HH:mm`).valueOf(),
-    offers: offers.map((offer) => {
-      return {
-        name: offer.name,
-        price: offer.price,
-        type: offer.type,
-        checked:
-          formData.get(`event-offer-${offer.type}`) === `on` ? true : false
-      };
-    }),
-    photos,
-    description,
-    price: formData.get(`event-price`),
-    id,
-    isFavorite: formData.get(`event-favorite`) === `on`
-  };
-};
+import {nanoid} from "nanoid";
+import Store from "../store.js";
 
 
 export default class TripEvent extends AbstractSmartComponent {
@@ -40,6 +15,7 @@ export default class TripEvent extends AbstractSmartComponent {
     this._offers = [...card.offers];
     this._photos = [...card.photos];
     this._description = card.description;
+    this._externalData = DefaultData;
     this._price = card.price;
     this._subscribeOnEvents();
     this._flatpickrStartDate = null;
@@ -50,6 +26,7 @@ export default class TripEvent extends AbstractSmartComponent {
 
     this._applyFlatpickr();
   }
+
 
   getTemplate() {
     return `<li class="trip-events__item">
@@ -248,7 +225,7 @@ export default class TripEvent extends AbstractSmartComponent {
               class="event__label  event__type-output"
               for="event-destination-1"
             >
-            ${this._eventType} at
+            ${this._eventType} ${EventTypeToPlaceholderText[this._eventType]}
             </label>
             <input
               class="event__input  event__input--destination"
@@ -260,10 +237,12 @@ export default class TripEvent extends AbstractSmartComponent {
               required
             />
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
-              <option value="Saint Petersburg"></option>
+            ${Store.getDestinations()
+              .map((destination) => {
+                return `<option value="${destination.name}"></option>`;
+              })
+              .join(``)}
+
             </datalist>
           </div>
 
@@ -306,10 +285,10 @@ export default class TripEvent extends AbstractSmartComponent {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">
-            Save
+            ${this._externalData.saveButtonText}
           </button>
           <button class="event__reset-btn" type="reset">${
-  this._card.isNew ? `Cancel` : `Delete`
+  this._card.isNew ? `Cancel` : this._externalData.deleteButtonText
 }</button>
 ${
   !this._card.isNew
@@ -341,31 +320,37 @@ ${
 }
         </header>
 
-        <section class="event__details">
         ${
-  this._offers.length
+  this._city || this._offers.length > 0
+    ? `<section class="event__details">
+        ${
+  this._offers.length > 0 ||
+          Store.getOffersByType(this._eventType).length > 0
     ? `<section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">
               Offers
             </h3>
+
             <div class="event__available-offers">
-            ${this._offers
+            ${Store.getOffersByType(this._eventType)
               .map((offer) => {
+                const offerId = nanoid();
+                const selectedOffer = this._offers.find(
+                    (_offer) => _offer.title === offer.title
+                );
                 return `
                   <div class="event__offer-selector">
                     <input
                       class="event__offer-checkbox  visually-hidden"
-                      id="event-offer-${offer.type}-1"
+                      id="event-offer-${offerId}-1"
                       type="checkbox"
-                      name="event-offer-${offer.type}"
-                      ${offer.checked && `checked`}
+                      name="event-offer-${offerId}"
+                      ${selectedOffer && `checked`}
                     />
-                    <label class="event__offer-label" for="event-offer-${
-  offer.type
-}-1">
-                      <span class="event__offer-title">${offer.name}</span>
+                    <label class="event__offer-label" for="event-offer-${offerId}-1">
+                      <span class="event__offer-title">${offer.title}</span>
                       &plus; &euro;&nbsp;<span class="event__offer-price">
-                      ${offer.price}
+                      ${selectedOffer ? selectedOffer.price : offer.price}
                       </span>
                     </label>
                   </div>
@@ -377,12 +362,14 @@ ${
     : ``
 }
 
-          <section class="event__section  event__section--destination">
+          ${
+  this._city
+    ? `<section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">
               Destination
             </h3>
-            <p class="event__destination-description">
-            ${this._card.description}
+            <p class="event__destination-description" name="event-description">
+            ${this._description}
             </p>
 
             <div class="event__photos-container">
@@ -392,25 +379,29 @@ ${
                   return `
                     <img
                       class="event__photo"
-                      src="${photo}"
-                      alt="Event photo"
+                      src="${photo.src}"
+                      alt="${photo.description}"
                     />
                   `;
                 })
                 .join(``)}
               </div>
             </div>
-          </section>
-        </section>
+          </section>`
+    : ``
+}
+        </section>`
+    : ``
+}
       </form>
     </li>
   `;
   }
-
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this.setFavoriteButtonClickHandler(this._favoriteButtonClickHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
+    this.setClickHandler(this._clickHandler);
     this._subscribeOnEvents();
   }
 
@@ -440,20 +431,23 @@ ${
 
   getData() {
     const form = this.getElement().querySelector(`.event--edit`);
-    const formData = new FormData(form);
-
-    return parseFormData(
-        formData,
-        this._offers,
-        this._photos,
-        this._description,
-        this._card.id
-    );
+    return new FormData(form);
   }
 
   rerender() {
     super.rerender();
     this._applyFlatpickr();
+  }
+
+  reset() {
+    this._eventType = this._card.type;
+    this._city = this._card.city;
+    this._offers = this._card.offers;
+    this._photos = this._card.photos;
+    this._price = this._card.price;
+    this._description = this._card.description;
+
+    this.rerender();
   }
 
   removeElement() {
@@ -464,6 +458,11 @@ ${
       this._flatpickrEndDate = null;
     }
     super.removeElement();
+  }
+
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
   }
 
   _applyFlatpickr() {
@@ -478,6 +477,7 @@ ${
       dateFormat: `d/m/y H:i`,
       allowInput: true,
       enableTime: true,
+      minDate: this._card.startDate
     };
 
     this._flatpickrStartDate = flatpickr(
@@ -493,31 +493,39 @@ ${
 
   _subscribeOnEvents() {
     const element = this.getElement();
+
     element
       .querySelector(`.event__type-list`)
       .addEventListener(`click`, (evt) => {
         if (evt.target.tagName === `INPUT`) {
           this._eventType = evt.target.value;
-          this._offers = getRandomOffers();
+          this._offers = Store.getOffersByType(this._eventType);
           this.rerender();
+          this.getElement()
+            .querySelector(`form`)
+            .classList.add(`trip-events__item`);
         }
       });
 
     element
-    .querySelector(`.event__input--destination`)
-    .addEventListener(`change`, (evt) => {
-      this._city = evt.target.value;
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, (evt) => {
+        this._city = evt.target.value;
 
-      this._photos = getRandomPhotos();
-      this._description = getRandomDescription();
-      this.rerender();
-    });
+        const city = Store.getDestinations().find(
+            (destination) => destination.name === this._city
+        );
+        this._description = city ? city.description : ``;
+        this._photos = city ? city.pictures : [];
+
+        this.rerender();
+      });
 
     element
-    .querySelector(`.event__input--price`)
-    .addEventListener(`change`, (evt) => {
-      this._price = evt.target.value;
-    });
+      .querySelector(`.event__input--price`)
+      .addEventListener(`change`, (evt) => {
+        this._price = evt.target.value;
+      });
   }
 
   setClickHandler(handler) {
@@ -525,6 +533,14 @@ ${
       this.getElement()
         .querySelector(`.event__rollup-btn`)
         .addEventListener(`click`, handler);
+      this._clickHandler = handler;
     }
+  }
+
+  blockForm() {
+    const form = this.getElement().querySelector(`form`);
+
+    form.querySelectorAll(`input`).forEach((input) => (input.disabled = true));
+    form.querySelectorAll(`button`).forEach((button) => (button.disabled = true));
   }
 }
