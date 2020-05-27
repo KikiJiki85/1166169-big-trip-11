@@ -543,4 +543,13 @@ ${
     form.querySelectorAll(`input`).forEach((input) => (input.disabled = true));
     form.querySelectorAll(`button`).forEach((button) => (button.disabled = true));
   }
+
+  setAlarmBorder(state) {
+    const form = this.getElement().querySelector(`form`);
+    if (state) {
+      form.classList.add(`alarm-border`);
+    } else {
+      form.classList.remove(`alarm-border`);
+    }
+  }
 }
