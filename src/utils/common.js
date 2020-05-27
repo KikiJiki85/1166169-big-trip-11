@@ -1,6 +1,7 @@
 import moment from "moment";
 
 export const SHAKE_ANIMATION_TIMEOUT = 700;
+export const SHAKE = `shake`;
 export const MAX_SHOWED_OFFERS_AMOUNT = 3;
 
 export const Button = {
@@ -32,6 +33,11 @@ export const FilterType = {
 export const DefaultData = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`
+};
+
+export const Key = {
+  ESCAPE: `Escape`,
+  ESC: `Esc`
 };
 
 export const EventTypeToPlaceholderText = {

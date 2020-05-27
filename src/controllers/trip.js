@@ -215,7 +215,7 @@ export default class TripController {
     document.querySelector(`.trip-info__cost-value`).innerHTML = fullPrice;
   }
 
-  _onDataChange(oldCard, newCard, pointController) {
+  _onDataChange(oldCard, newCard, pointController, itShouldRerender = true) {
     if (oldCard === EmptyPoint) {
       this._creatingPoint = null;
       if (newCard === null) {
@@ -267,9 +267,14 @@ export default class TripController {
               pointModel
           );
           if (isSuccess) {
-            pointController.render(pointModel, Mode.DEFAULT);
-            this._updatePoints();
-            this._reset();
+            if (itShouldRerender) {
+              pointController.render(pointModel, Mode.DEFAULT);
+              this._updatePoints();
+              this._reset();
+              this._filterController.render();
+            } else {
+              pointController.render(pointModel, Mode.EDIT);
+            }
           }
         })
         .catch(() => {

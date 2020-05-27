@@ -1,7 +1,7 @@
 import TripDayEventComponent from "../components/trip-day-event.js";
 import TripEventComponent from "../components/trip-event.js";
 import {replace, render, remove, RenderPosition} from "../utils/render.js";
-import {Mode, SHAKE_ANIMATION_TIMEOUT, Button} from "../utils/common.js";
+import {SHAKE, SHAKE_ANIMATION_TIMEOUT, Button, Mode, Key} from "../utils/common.js";
 import moment from "moment";
 import PointModel from "../models/point.js";
 import Store from "../store.js";
@@ -84,7 +84,7 @@ export default class PointController {
 
     this._cardEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-
+      this._cardEditComponent.setAlarmBorder(true);
       const formData = this._cardEditComponent.getData();
       const data = parseFormData(formData);
 
@@ -98,6 +98,7 @@ export default class PointController {
     });
 
     this._cardEditComponent.setDeleteButtonClickHandler(() => {
+      this._cardEditComponent.setAlarmBorder(true);
       this._cardEditComponent.setData({
         deleteButtonText: Button.DELETING
       });
@@ -109,7 +110,7 @@ export default class PointController {
       const newCard = PointModel.clone(card);
       newCard.isFavorite = !newCard.isFavorite;
 
-      this._onDataChange(card, newCard, this);
+      this._onDataChange(card, newCard, this, false);
     });
 
     switch (mode) {
@@ -123,6 +124,11 @@ export default class PointController {
               this._container,
               this._cardComponent
           );
+        }
+        break;
+      case Mode.EDIT:
+        if (oldCardEditComponent) {
+          replace(this._cardEditComponent, oldCardEditComponent);
         }
         break;
       case Mode.ADDING:
@@ -141,7 +147,7 @@ export default class PointController {
   }
 
   _onEscKeyDown(evt) {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    const isEscKey = evt.key === Key.ESCAPE || evt.key === Key.ESC;
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
@@ -154,6 +160,7 @@ export default class PointController {
   }
 
   _replaceCardEditToCard() {
+    this._cardEditComponent.reset();
     replace(this._cardComponent, this._cardEditComponent);
     this._mode = Mode.DEFAULT;
   }
@@ -165,9 +172,10 @@ export default class PointController {
   }
 
   shake() {
-    this._cardEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT /
+    this._cardEditComponent.getElement().style.animation = `${SHAKE} ${SHAKE_ANIMATION_TIMEOUT /
       1000}s`;
-    this._cardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT /
+
+    this._cardComponent.getElement().style.animation = `${SHAKE}${SHAKE_ANIMATION_TIMEOUT /
       1000}s`;
 
     setTimeout(() => {
@@ -175,9 +183,11 @@ export default class PointController {
       this._cardComponent.getElement().style.animation = ``;
 
       this._cardEditComponent.setData({
-        saveButtonText: `Save`,
-        deleteButtonText: `Delete`
+        saveButtonText: Button.SAVE,
+        deleteButtonText: Button.DELETE
       });
+
+      this._cardEditComponent.setAlarmBorder(true);
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 
