@@ -72,28 +72,36 @@ export const menuItems = [
 export const AUTHORIZATION = `Basic aEd666estfeqe5Ehj`;
 export const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
+const addZero = (value) => (value < 10 ? `0${value}` : value);
+
 export const parseTime = (UTCTimestamp) => moment(UTCTimestamp).format(`HH:mm`);
 
-export const getTripDuration = (startDate, endDate) => {
-  const monthName = moment(startDate).format(`MMM`);
-  const startDay = moment(startDate).format(`DD`);
-  const endDay = moment(endDate).format(`DD`);
+export const getTripDuration = (startDateUTCTimestamp, endDateUTCTimestamp) => {
+  const startMonthName = moment(startDateUTCTimestamp).format(`MMM`);
+  const endMonthName = moment(endDateUTCTimestamp).format(`MMM`);
+  const startDay = moment(startDateUTCTimestamp).format(`DD`);
+  const endDay = moment(endDateUTCTimestamp).format(`DD`);
 
-  return `${monthName} ${startDay}&nbsp;&mdash;&nbsp;${endDay}`;
+  return `${startMonthName} ${startDay}&nbsp;&mdash;&nbsp;${
+    startMonthName !== endMonthName ? `${endMonthName} ` : ``
+  }${endDay}`;
 };
 
-export const getEventDuration = (startDate, endDate) => {
+export const getEventDuration = (
+    startDateUTCTimestamp,
+    endDateUTCTimestamp
+) => {
   const duration = moment
     .duration()
-    .subtract(startDate - endDate);
+    .subtract(startDateUTCTimestamp - endDateUTCTimestamp);
 
   const days = duration.days();
   const hours = duration.hours();
   const minuntes = duration.minutes();
 
   return `
-    ${(days + `D`) || ``}
-    ${(hours + `H`) || ``}
-    ${minuntes}M
+    ${(days > 0 && `${addZero(days)}D`) || ``}
+    ${((days > 0 || hours > 0) && `${addZero(hours)}H`) || ``}
+    ${addZero(minuntes)}M
   `;
 };

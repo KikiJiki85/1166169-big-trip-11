@@ -21,6 +21,7 @@ export default class TripEvent extends AbstractSmartComponent {
     this._flatpickrStartDate = null;
     this._flatpickrEndDate = null;
     this._submitHandler = null;
+    this._clickHandler = null;
     this._favoriteButtonClickHandler = null;
     this._deleteButtonClickHandler = null;
 
@@ -280,6 +281,8 @@ export default class TripEvent extends AbstractSmartComponent {
               id="event-price-1"
               type="text"
               name="event-price"
+              title="Введите целое число"
+              pattern="^[ 0-9]+$"
               value="${this._price}"
             />
           </div>
