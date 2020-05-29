@@ -6,7 +6,7 @@ import moment from "moment";
 import PointModel from "../models/point.js";
 import Store from "../store.js";
 
-export const EmptyPoint = {
+const EmptyPoint = {
   type: `taxi`,
   city: ``,
   startDate: Date.now(),
@@ -203,3 +203,5 @@ export default class PointController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 }
+
+export {EmptyPoint};

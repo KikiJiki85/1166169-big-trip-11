@@ -1,46 +1,49 @@
 import moment from "moment";
 
-export const SHAKE_ANIMATION_TIMEOUT = 700;
-export const SHAKE = `shake`;
-export const MAX_SHOWED_OFFERS_AMOUNT = 3;
+const SHAKE_ANIMATION_TIMEOUT = 700;
+const SHAKE = `shake`;
+const MAX_SHOWED_OFFERS_AMOUNT = 3;
 
-export const Button = {
+const AUTHORIZATION = `Basic aEd666estfeqe5Ehj`;
+const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
+
+const Button = {
   SAVE: `Save`,
   DELETE: `Delete`,
   SAVING: `Saving...`,
   DELETING: `Deleting...`
 };
 
-export const Method = {
+const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
   DELETE: `DELETE`
 };
 
-export const Mode = {
+const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
   ADDING: `adding`
 };
 
-export const FilterType = {
+const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
   PAST: `past`
 };
 
-export const DefaultData = {
+const DefaultData = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`
 };
 
-export const Key = {
+const Key = {
   ESCAPE: `Escape`,
   ESC: `Esc`
 };
 
-export const EventTypeToPlaceholderText = {
+const EventTypeToPlaceholderText = {
   "taxi": `to`,
   "bus": `to`,
   "train": `to`,
@@ -53,12 +56,12 @@ export const EventTypeToPlaceholderText = {
   "restaurant": `at`
 };
 
-export const MenuItem = {
+const MenuItem = {
   TABLE: `Table`,
   STATS: `Stats`
 };
 
-export const menuItems = [
+const menuItems = [
   {
     name: MenuItem.TABLE,
     active: true
@@ -69,14 +72,11 @@ export const menuItems = [
   }
 ];
 
-export const AUTHORIZATION = `Basic aEd666estfeqe5Ehj`;
-export const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
-
 const addZero = (value) => (value < 10 ? `0${value}` : value);
 
-export const parseTime = (UTCTimestamp) => moment(UTCTimestamp).format(`HH:mm`);
+const parseTime = (UTCTimestamp) => moment(UTCTimestamp).format(`HH:mm`);
 
-export const getTripDuration = (startDateUTCTimestamp, endDateUTCTimestamp) => {
+const getTripDuration = (startDateUTCTimestamp, endDateUTCTimestamp) => {
   const startMonthName = moment(startDateUTCTimestamp).format(`MMM`);
   const endMonthName = moment(endDateUTCTimestamp).format(`MMM`);
   const startDay = moment(startDateUTCTimestamp).format(`DD`);
@@ -87,7 +87,7 @@ export const getTripDuration = (startDateUTCTimestamp, endDateUTCTimestamp) => {
   }${endDay}`;
 };
 
-export const getEventDuration = (
+const getEventDuration = (
     startDateUTCTimestamp,
     endDateUTCTimestamp
 ) => {
@@ -104,4 +104,24 @@ export const getEventDuration = (
     ${((days > 0 || hours > 0) && `${addZero(hours)}H`) || ``}
     ${addZero(minuntes)}M
   `;
+};
+
+export {
+  SHAKE_ANIMATION_TIMEOUT,
+  SHAKE,
+  MAX_SHOWED_OFFERS_AMOUNT,
+  AUTHORIZATION,
+  END_POINT,
+  Button,
+  Method,
+  Mode,
+  FilterType,
+  DefaultData,
+  Key,
+  EventTypeToPlaceholderText,
+  MenuItem,
+  menuItems,
+  parseTime,
+  getTripDuration,
+  getEventDuration
 };
